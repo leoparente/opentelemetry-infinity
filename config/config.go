@@ -1,9 +1,18 @@
 package config
 
+import "time"
+
+type Status struct {
+	StartTime      time.Time     `json:"start_time"`
+	UpTime         time.Duration `json:"up_time"`
+	InfVersion     string        `json:"otlpinf_version"`
+	ContribVersion string        `json:"otel_contrib_version"`
+}
+
 type Policy struct {
-	FeatureGates []string               `mapstructure:"feature_gates"`
-	Set          map[string]string      `mapstructure:"set"`
-	Config       map[string]interface{} `mapstructure:"config"`
+	FeatureGates []string               `yaml:"feature_gates"`
+	Set          map[string]string      `yaml:"set"`
+	Config       map[string]interface{} `yaml:"config"`
 }
 
 type OtlpInf struct {
@@ -13,6 +22,6 @@ type OtlpInf struct {
 }
 
 type Config struct {
-	Version float64 `mapstructure:"version"`
+	Version string  `mapstructure:"version"`
 	OtlpInf OtlpInf `mapstructure:"otlp_inf"`
 }

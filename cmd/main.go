@@ -8,6 +8,8 @@ import (
 	"strings"
 	"syscall"
 
+	_ "embed"
+
 	"github.com/leoparente/otlpinf/config"
 	"github.com/leoparente/otlpinf/otlpinf"
 	"github.com/spf13/cobra"
@@ -15,6 +17,9 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
+
+//go:embed VERSION
+var version string
 
 var (
 	Debug      bool
@@ -28,7 +33,7 @@ func Run(cmd *cobra.Command, args []string) {
 
 	// configuration
 	var config config.Config
-
+	config.Version = version
 	config.OtlpInf.Debug = Debug
 	config.OtlpInf.ServerHost = ServerHost
 	config.OtlpInf.ServerPort = ServerPort
