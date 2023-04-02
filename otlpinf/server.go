@@ -82,7 +82,7 @@ func (o *OltpInf) createPolicy(c echo.Context) error {
 		return err
 	}
 	var payload map[string]config.Policy
-	if err = yaml.y(body, &payload); err != nil {
+	if err = yaml.Unmarshal(body, &payload); err != nil {
 		o.logger.Info(fmt.Sprint("%v", err))
 		return err
 	}
