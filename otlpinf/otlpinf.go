@@ -4,11 +4,11 @@ import (
 	"context"
 	"time"
 
-	"github.com/ghodss/yaml"
 	"github.com/labstack/echo/v4"
 	"github.com/leoparente/otlpinf/config"
 	"github.com/leoparente/otlpinf/runner"
 	"go.uber.org/zap"
+	"gopkg.in/yaml.v3"
 )
 
 type RunnerInfo struct {

@@ -9,11 +9,12 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/ghodss/yaml"
+	yson "github.com/ghodss/yaml"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/leoparente/otlpinf/config"
 	"github.com/leoparente/otlpinf/runner"
+	"gopkg.in/yaml.v3"
 )
 
 func (o *OltpInf) startServer() error {
@@ -42,7 +43,7 @@ func (o *OltpInf) getStatus(c echo.Context) error {
 }
 
 func (o *OltpInf) getCapabilities(c echo.Context) error {
-	j, err := yaml.YAMLToJSON(o.capabilities)
+	j, err := yson.YAMLToJSON(o.capabilities)
 	if err != nil {
 		return err
 	}
@@ -83,8 +84,10 @@ func (o *OltpInf) createPolicy(c echo.Context) error {
 	}
 	var payload map[string]config.Policy
 	if err = yaml.Unmarshal(body, &payload); err != nil {
-		o.logger.Info(fmt.Sprint("%v", err))
-		return err
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	if len(payload) > 1 {
+		return c.String(http.StatusBadRequest, "only 1 policy allowed")
 	}
 
 	o.logger.Info(fmt.Sprint("%v", payload))
