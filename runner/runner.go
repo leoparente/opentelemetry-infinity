@@ -3,12 +3,16 @@ package runner
 import (
 	"context"
 	"os"
+	"os/exec"
+	"strings"
 
 	_ "embed"
 	"time"
 
 	"github.com/amenzhinsky/go-memexec"
+	"github.com/leoparente/otlpinf/config"
 	"go.uber.org/zap"
+	"gopkg.in/yaml.v3"
 )
 
 //go:embed otelcol-contrib
@@ -32,11 +36,15 @@ type State struct {
 }
 
 type Runner struct {
-	logger     *zap.Logger
-	policyName string
-	startTime  time.Time
-	cancelFunc context.CancelFunc
-	ctx        context.Context
+	logger       *zap.Logger
+	policyName   string
+	policyDir    string
+	policyFile   string
+	featureGates string
+	startTime    time.Time
+	cancelFunc   context.CancelFunc
+	ctx          context.Context
+	cmd          *exec.Cmd
 }
 
 func GetCapabilities() ([]byte, error) {
@@ -53,28 +61,32 @@ func GetCapabilities() ([]byte, error) {
 	return ret, nil
 }
 
-func New(logger *zap.Logger, policyName string) Runner {
-	return Runner{logger: logger, policyName: policyName}
+func New(logger *zap.Logger, policyName string, policyDir string) Runner {
+	return Runner{logger: logger, policyName: policyName, policyDir: policyDir}
 }
 
-func (r *Runner) getProcRunningStatus() (RunningStatus, string, error) {
-	// status := r.proc.Status()
-	// if status.Error != nil {
-	// 	errMsg := fmt.Sprintf("runner process error: %v", status.Error)
-	// 	return RunnerError, errMsg, status.Error
-	// }
-	// if status.Complete {
-	// 	err := r.proc.Stop()
-	// 	return Offline, "runner process ended", err
-	// }
-	// if status.StopTs > 0 {
-	// 	return Offline, "runner process ended", nil
-	// }
-	return Running, "", nil
-}
+func (r *Runner) Configure(c *config.Policy) error {
+	b, err := yaml.Marshal(&c.Config)
+	if err != nil {
+		return err
+	}
+	f, err := os.CreateTemp(r.policyDir, r.policyName)
+	if err != nil {
+		return err
+	}
+	if _, err = f.Write(b); err != nil {
+		return err
+	}
+	r.policyFile = f.Name()
+	if err = f.Close(); err != nil {
+		return err
+	}
 
-func (r *Runner) Version() (string, error) {
-	return "", nil
+	if c.FeatureGates != nil {
+		r.featureGates = strings.Join(c.FeatureGates, ",")
+	}
+
+	return nil
 }
 
 func (r *Runner) Start(ctx context.Context, cancelFunc context.CancelFunc) error {
@@ -82,37 +94,30 @@ func (r *Runner) Start(ctx context.Context, cancelFunc context.CancelFunc) error
 	r.cancelFunc = cancelFunc
 	r.ctx = ctx
 
-	f, err := os.CreateTemp("", r.policyName)
-	if err != nil {
-		return err
-	}
-	f.Write([]byte("ahehaehae"))
-	f.Close()
-	r.logger.Info(f.Name())
-
 	sOptions := []string{
 		"--config",
-		f.Name(),
+		r.policyFile,
 	}
-	// fil, err := os.Open("src/a/b")
-	// if err != nil {
-	// 	r.logger.Error("error", zap.Error(err))
-	// 	return err
-	// }
-	// r.logger.Error("error" + fil.Name())
+
+	if len(r.featureGates) > 0 {
+		sOptions = append(sOptions, "--feature-gates", r.featureGates)
+	}
+
+	//TODO: implement set support
+
 	exe, err := memexec.New(otel_contrib)
 	if err != nil {
 		return err
 	}
 	defer exe.Close()
 
-	sample := &RunnerStdout{r.logger, r.policyName}
-	cmd := exe.CommandContext(ctx, sOptions...)
-	cmd.Stdout = sample
-	cmd.Stderr = &RunnerStderr{r.logger, r.policyName}
-	cmd.Start()
+	r.cmd = exe.CommandContext(ctx, sOptions...)
+	r.cmd.Stdout = &RunnerStdout{r.logger, r.policyName}
+	r.cmd.Stderr = &RunnerStderr{r.logger, r.policyName}
+	if err = r.cmd.Start(); err != nil {
+		return err
+	}
 
-	cmd.Wait()
 	// data, err := cmd.Output() // cmd is a `*exec.Cmd` from the standard libraryp
 	// if err != nil {
 	// 	r.logger.Info("erro", zap.Error(err))
@@ -123,15 +128,14 @@ func (r *Runner) Start(ctx context.Context, cancelFunc context.CancelFunc) error
 }
 
 func (r *Runner) Stop(ctx context.Context) error {
-	// r.logger.Info("routine call to stop runner", zap.Any("routine", ctx.Value("routine")))
-	// defer r.cancelFunc()
-	// err := r.proc.Stop()
-	// finalStatus := <-r.statusChan
-	// if err != nil {
-	// 	r.logger.Error("runner shutdown error", zap.Error(err))
-	// 	return err
-	// }
-	// r.logger.Info("runner process stopped", zap.Int("pid", finalStatus.PID), zap.Int("exit_code", finalStatus.Exit))
+	r.logger.Info("routine call to stop runner", zap.Any("routine", ctx.Value("routine")))
+	defer r.cancelFunc()
+	if err := r.cmd.Cancel(); err != nil {
+		return err
+	}
+	pid := r.cmd.ProcessState.Pid()
+	exitCode := r.cmd.ProcessState.ExitCode()
+	r.logger.Info("runner process stopped", zap.Int("pid", pid), zap.Int("exit_code", exitCode))
 	return nil
 }
 
@@ -139,14 +143,10 @@ func (r *Runner) FullReset(ctx context.Context) error {
 	return nil
 }
 
-func (r *Runner) GetStartTime() time.Time {
-	return r.startTime
-}
-
 func (r *Runner) GetRunningStatus() (RunningStatus, string, error) {
-	runningStatus, errMsg, err := r.getProcRunningStatus()
-	if runningStatus != Running {
-		return runningStatus, errMsg, err
-	}
-	return runningStatus, "", nil
+	// runningStatus, errMsg, err := r.getProcRunningStatus()
+	// if runningStatus != Running {
+	// 	return runningStatus, errMsg, err
+	// }
+	return 2, "", nil
 }

@@ -2,6 +2,7 @@ package otlpinf
 
 import (
 	"context"
+	"os"
 	"time"
 
 	"github.com/labstack/echo/v4"
@@ -22,6 +23,7 @@ type OltpInf struct {
 	conf           *config.Config
 	stat           config.Status
 	policies       map[string]RunnerInfo
+	policiesDir    string
 	ctx            context.Context
 	cancelFunction context.CancelFunc
 	echoSv         *echo.Echo
@@ -37,7 +39,13 @@ func (o *OltpInf) Start(ctx context.Context, cancelFunc context.CancelFunc) erro
 	o.stat.InfVersion = o.conf.Version
 	o.ctx = context.WithValue(ctx, "routine", "otlpInfRoutine")
 	o.cancelFunction = cancelFunc
+
 	var err error
+	o.policiesDir, err = os.MkdirTemp("", "policies")
+	if err != nil {
+		return err
+	}
+	defer os.RemoveAll(o.policiesDir)
 	o.capabilities, err = runner.GetCapabilities()
 	if err != nil {
 		return err
