@@ -15,7 +15,6 @@ import (
 type RunnerInfo struct {
 	Policy   config.Policy
 	Instance runner.Runner
-	State    runner.State
 }
 
 type OltpInf struct {
@@ -69,10 +68,10 @@ func (o *OltpInf) Start(ctx context.Context, cancelFunc context.CancelFunc) erro
 func (o *OltpInf) Stop(ctx context.Context) {
 	o.logger.Info("routine call for stop otlpinf", zap.Any("routine", ctx.Value("routine")))
 	for name, b := range o.policies {
-		if state, _, _ := b.Instance.GetRunningStatus(); state == runner.Running {
-			o.logger.Debug("stopping runner", zap.String("runner", name))
+		if state := b.Instance.GetStatus(); state.Status == runner.Running {
+			o.logger.Debug("stopping runner", zap.String("policy", name))
 			if err := b.Instance.Stop(ctx); err != nil {
-				o.logger.Error("error while stopping the runner", zap.String("runner", name))
+				o.logger.Error("error while stopping the runner", zap.String("policy", name))
 			}
 		}
 	}

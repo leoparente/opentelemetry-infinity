@@ -20,16 +20,16 @@ import (
 //go:embed otelcol-contrib
 var otel_contrib []byte
 
-type RunningStatus int
+type Status int
 
 const (
-	Unknown RunningStatus = iota
+	Unknown Status = iota
 	Running
 	RunnerError
 	Offline
 )
 
-var MapRunningStatus = map[RunningStatus]string{
+var MapStatus = map[Status]string{
 	Unknown:     "unknown",
 	Running:     "running",
 	RunnerError: "runner_error",
@@ -37,12 +37,12 @@ var MapRunningStatus = map[RunningStatus]string{
 }
 
 type State struct {
-	Status            RunningStatus `yaml:"status"`
-	startTime         time.Time
-	RestartCount      int64
-	LastError         string
-	LastRestartTS     time.Time
-	LastRestartReason string
+	Status        Status    `yaml:"-"`
+	StatusText    string    `yaml:"status"`
+	startTime     time.Time `yaml:"start_time"`
+	RestartCount  int64     `yaml:"restart_count"`
+	LastError     string    `yaml:"last_error"`
+	LastRestartTS time.Time `yaml:"last_restart_time"`
 }
 
 type Runner struct {
@@ -138,7 +138,7 @@ func (r *Runner) Start(ctx context.Context, cancelFunc context.CancelFunc) error
 	case line := <-r.errChan:
 		return errors.New(string(append([]byte("otelcol-contrib - "), reg.ReplaceAllString(line, "")...)))
 	case <-ctxTimeout.Done():
-		r.state.Status = Running
+		r.setStatus(Running)
 		r.logger.Info("runner proccess started successfully", zap.String("policy", r.policyName), zap.Any("pid", r.cmd.Process.Pid))
 	}
 
@@ -147,7 +147,7 @@ func (r *Runner) Start(ctx context.Context, cancelFunc context.CancelFunc) error
 			select {
 			case line := <-r.errChan:
 				r.state.LastError = string(append([]byte("otelcol-contrib - "), reg.ReplaceAllString(line, "")...))
-				r.state.Status = RunnerError
+				r.setStatus(RunnerError)
 			case <-r.ctx.Done():
 				r.Stop(r.ctx)
 			}
@@ -163,7 +163,7 @@ func (r *Runner) Stop(ctx context.Context) error {
 	if err := r.cmd.Cancel(); err != nil {
 		return err
 	}
-	r.state.Status = Offline
+	r.setStatus(Offline)
 	pid := r.cmd.ProcessState.Pid()
 	exitCode := r.cmd.ProcessState.ExitCode()
 	r.logger.Info("runner process stopped", zap.Int("pid", pid), zap.Int("exit_code", exitCode))
@@ -174,6 +174,12 @@ func (r *Runner) FullReset(ctx context.Context) error {
 	return nil
 }
 
-func (r *Runner) GetRunningStatus() (RunningStatus, string, error) {
-	return r.state.Status, r.state.LastError, nil
+func (r *Runner) GetStatus() State {
+	return r.state
+}
+
+func (r *Runner) setStatus(s Status) {
+	r.state.Status = s
+	r.state.StatusText = MapStatus[s]
+	return
 }

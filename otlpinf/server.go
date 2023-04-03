@@ -17,6 +17,11 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+type ReturnPolicyData struct {
+	State runner.State `yaml:"status"`
+	config.Policy
+}
+
 func messageReturn(value string) []byte {
 	ret := strings.Join([]string{`{"message":"`, value, `"}`}, "")
 	return []byte(ret)
@@ -71,11 +76,12 @@ func (o *OltpInf) getPolicy(c echo.Context) error {
 	policy := c.Param("policy")
 	rInfo, ok := o.policies[policy]
 	if ok {
-		_, err := yaml.Marshal(rInfo.Policy)
+		y := map[string]ReturnPolicyData{policy: {rInfo.Instance.GetStatus(), rInfo.Policy}}
+		ret, err := yaml.Marshal(y)
 		if err != nil {
 			return c.JSONBlob(http.StatusBadRequest, messageReturn(err.Error()))
 		}
-		return c.Blob(http.StatusOK, "application/x-yaml", []byte(`à`))
+		return c.Blob(http.StatusOK, "application/x-yaml", ret)
 	} else {
 		return c.JSONBlob(http.StatusNotFound, messageReturn("Policy Not Found"))
 	}
@@ -118,8 +124,13 @@ func (o *OltpInf) createPolicy(c echo.Context) error {
 	if err := r.Start(context.WithCancel(runnerCtx)); err != nil {
 		return c.JSONBlob(http.StatusBadRequest, messageReturn(err.Error()))
 	}
+	y := map[string]ReturnPolicyData{policy: {r.GetStatus(), data}}
+	ret, err := yaml.Marshal(y)
+	if err != nil {
+		return c.JSONBlob(http.StatusBadRequest, messageReturn(err.Error()))
+	}
 	o.policies[policy] = RunnerInfo{Policy: data, Instance: r}
-	return c.String(http.StatusOK, "Hello, World!")
+	return c.Blob(http.StatusOK, "application/x-yaml", ret)
 }
 
 func (o *OltpInf) deletePolicy(c echo.Context) error {
