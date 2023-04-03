@@ -1,6 +1,6 @@
 # opentelemetry-infinity
 
-Opentelemetry Infinity provison [otel-collector-contrib](https://github.com/open-telemetry/opentelemetry-collector-contrib) instances through a simple REST API using a policy mechanism.
+Opentelemetry Infinity provison [otel-collector-contrib](https://github.com/open-telemetry/opentelemetry-collector-contrib) instances through a simple REST API using a policy mechanism. Each policy spin up a new `otelcol-contrib` process running the configuration provided by the policy.
 
 ## Project premises
 1. Single binary: `otlpinf` embeds `otelcol-contrib` in its binary. Therefore, only one static binary is required.
