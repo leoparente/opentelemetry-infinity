@@ -69,8 +69,12 @@ func (o *OltpInf) getPolicies(c echo.Context) error {
 
 func (o *OltpInf) getPolicy(c echo.Context) error {
 	policy := c.Param("policy")
-	_, ok := o.policies[policy]
+	rInfo, ok := o.policies[policy]
 	if ok {
+		_, err := yaml.Marshal(rInfo.Policy)
+		if err != nil {
+			return c.JSONBlob(http.StatusBadRequest, messageReturn(err.Error()))
+		}
 		return c.Blob(http.StatusOK, "application/x-yaml", []byte(`à`))
 	} else {
 		return c.JSONBlob(http.StatusNotFound, messageReturn("Policy Not Found"))
@@ -125,6 +129,7 @@ func (o *OltpInf) deletePolicy(c echo.Context) error {
 		if err := r.Instance.Stop(o.ctx); err != nil {
 			return c.JSONBlob(http.StatusBadRequest, messageReturn(err.Error()))
 		}
+		delete(o.policies, policy)
 		return c.JSONBlob(http.StatusOK, messageReturn(policy+" was deleted"))
 	} else {
 		return c.JSONBlob(http.StatusNotFound, messageReturn("Policy Not Found"))

@@ -10,6 +10,7 @@ type RunnerStdout struct {
 type RunnerStderr struct {
 	logger     *zap.Logger
 	policyName string
+	channel    chan<- string
 }
 
 func (rs *RunnerStdout) Write(p []byte) (n int, err error) {
@@ -20,6 +21,7 @@ func (rs *RunnerStdout) Write(p []byte) (n int, err error) {
 
 func (rs *RunnerStderr) Write(p []byte) (n int, err error) {
 	rs.logger.Error("runner stderr", zap.String("policy", rs.policyName), zap.ByteString("log", p))
+	rs.channel <- string(p)
 	n = len(p)
 	return
 }
