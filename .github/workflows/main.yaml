@@ -24,10 +24,6 @@ jobs:
         run: |
           echo "REF_TAG=latest" >> $GITHUB_ENV
 
-      - name: Append suffix on VERSION file for develop build
-        run: |
-          echo "`cat ${{github.workspace}}/cmd/VERSION`-${{ env.REF_TAG }}" > VERSION
-
       - name: get otelcol-contrib
         run: make getotelcol
 
@@ -46,10 +42,6 @@ jobs:
       - name: Generate ref tag (latest)
         run: |
           echo "REF_TAG=latest" >> $GITHUB_ENV
-
-      - name: Append suffix on VERSION file for develop build
-        run: |
-          echo "`cat ${{github.workspace}}/cmd/VERSION`-${{ env.REF_TAG }}" > VERSION
 
       - name: Get VERSION
         run: |
