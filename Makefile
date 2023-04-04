@@ -12,6 +12,9 @@ endef
 
 getotelcol:
 	wget -o otelcol-contrib.tar.gz https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v0.75.0/otelcol-contrib_0.75.0_linux_amd64.tar.gz
+	tar -xvzf otelcol-contrib.tar.gz
+	mv otelcol-contrib/otelcol-contrib runner/otelcol-contrib
+	rm -rf otelcol-contrib*
 
 binary:
 	$(call compile_service)
