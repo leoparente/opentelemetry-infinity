@@ -11,7 +11,7 @@ define compile_service
 endef
 
 getotelcol:
-	wget -o /tmp/otelcol-contrib.tar.gz https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v0.75.0/otelcol-contrib_0.75.0_linux_amd64.tar.gz
+	wget -O /tmp/otelcol-contrib.tar.gz https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v0.75.0/otelcol-contrib_0.75.0_linux_amd64.tar.gz
 	tar -xvzf /tmp/otelcol-contrib.tar.gz -C /tmp/
 	mv /tmp/otelcol-contrib runner/otelcol-contrib
 	rm -rf /tmp/otelcol-contrib*
