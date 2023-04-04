@@ -10,6 +10,9 @@ define compile_service
 	CGO_ENABLED=$(CGO_ENABLED) GOOS=linux GOARCH=$(GOARCH) GOARM=$(GOARM) go build -mod=mod -ldflags "-extldflags "-static" -X 'github.com/leoparente/opentelemetry-infinity/buildinfo.version=$(VERSION)'" -o ${BUILD_DIR}/otel-infinity cmd/main.go
 endef
 
+getotelcol:
+	wget -o otelcol-contrib.tar.gz https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v0.75.0/otelcol-contrib_0.75.0_linux_amd64.tar.gz
+
 binary:
 	$(call compile_service)
   
