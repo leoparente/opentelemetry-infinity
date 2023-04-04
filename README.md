@@ -9,19 +9,160 @@ Opentelemetry Infinity provison [otel-collector-contrib](https://github.com/open
 
 **3. Compatibility**: `opentelemetry-infinity` is basically a wrapper over the official `opentelemetry-collector` which has not released a version `1.0` yet, i.e., breaking changes are expected. Any changes that occurs on its CLI will be reflected in this project.
 
-## REST API
-The default `otlpinf` address is `localhost:10222`. to change that you can specify host and port when starting `otlpinf`:
-```sh
-./otlinf run -a {host} -p {port}
-```
-
 ## Docker Image
 You can download and run `otlpinf` using docker image:
 ```
 docker run --net=host ghcr.io/leoparente/opentelemetry-infinity run
 ```
 
-## Policy RFC (v1) 
+## REST API
+The default `otlpinf` address is `localhost:10222`. to change that you can specify host and port when starting `otlpinf`:
+```sh
+./otlpinf run -a {host} -p {port}
+```
+
+### Routes (v1)
+`otlpinf` is aimed to be simple and straightforward. 
+
+#### Get runtime and capabilities information
+
+<details>
+ <summary><code>GET</code> <code><b>/api/v1/status</b></code> <code>(gets otlpinf runtime data)</code></summary>
+
+##### Parameters
+
+> None
+
+##### Responses
+
+> | http code     | content-type                      | response                                                            |
+> |---------------|-----------------------------------|---------------------------------------------------------------------|
+> | `200`         | `text/plain;charset=UTF-8`        | JSON data                                                           |
+
+##### Example cURL
+
+> ```javascript
+>  curl -X GET -H "Content-Type: application/json" http://localhost:10222/api/v1/status
+> ```
+
+</details>
+
+<details>
+ <summary><code>GET</code> <code><b>/api/v1/capabilities</b></code> <code>(gets otelcol-contrib capabilities)</code></summary>
+
+##### Parameters
+
+> None
+
+##### Responses
+
+> | http code     | content-type                      | response                                                            |
+> |---------------|-----------------------------------|---------------------------------------------------------------------|
+> | `200`         | `text/plain;charset=UTF-8`        | JSON data                                                           |
+
+##### Example cURL
+
+> ```javascript
+>  curl -X GET -H "Content-Type: application/json" http://localhost:10222/api/v1/capabilities
+> ```
+
+</details>
+
+#### Policies Management
+
+<details>
+ <summary><code>GET</code> <code><b>/api/v1/policies</b></code> <code>(gets all existing policies)</code></summary>
+
+##### Parameters
+
+> None
+
+##### Responses
+
+> | http code     | content-type                      | response                                                            |
+> |---------------|-----------------------------------|---------------------------------------------------------------------|
+> | `200`         | `text/plain;charset=UTF-8`        | JSON array containing all applied policy names                      |
+
+##### Example cURL
+
+> ```javascript
+>  curl -X GET -H "Content-Type: application/json" http://localhost:10222/api/v1/policies
+> ```
+
+</details>
+
+
+<details>
+ <summary><code>POST</code> <code><b>/api/v1/policies</b></code> <code>(Creates a new policy)</code></summary>
+
+##### Parameters
+
+> | name      |  type     | data type               | description                                                           |
+> |-----------|-----------|-------------------------|-----------------------------------------------------------------------|
+> | None      |  required | YAML object             | yaml format specified in [Policy RFC](#policy-rfc-v1) 
+
+
+##### Responses
+
+> | http code     | content-type                      | response                                                            |
+> |---------------|-----------------------------------|---------------------------------------------------------------------|
+> | `200`         | `text/plain;charset=UTF-8`        | JSON data                                                           |
+
+##### Example cURL
+
+> ```javascript
+>  curl -X POST -H "Content-Type: application/x-yaml" --data @post.yaml http://localhost:10222/api/v1/policies
+> ```
+
+</details>
+
+<details>
+ <summary><code>GET</code> <code><b>/api/v1/policies/{policy_name}</b></code> <code>(gets information of a specific policy)</code></summary>
+
+##### Parameters
+
+> | name              |  type     | data type      | description                         |
+> |-------------------|-----------|----------------|-------------------------------------|
+> |   `policy_name`   |  required | string         | The unique policy name              |
+
+##### Responses
+
+> | http code     | content-type                      | response                                                            |
+> |---------------|-----------------------------------|---------------------------------------------------------------------|
+> | `200`         | `text/plain;charset=UTF-8`        | JSON data                                                           |
+
+##### Example cURL
+
+> ```javascript
+>  curl -X GET -H "Content-Type: application/json" http://localhost:10222/api/v1/policies/my_policy
+> ```
+
+</details>
+
+<details>
+ <summary><code>DELETE</code> <code><b>/api/v1/policies/{policy_name}</b></code> <code>(delete a existing policy)</code></summary>
+
+##### Parameters
+
+> | name              |  type     | data type      | description                         |
+> |-------------------|-----------|----------------|-------------------------------------|
+> |   `policy_name`   |  required | string         | The unique policy name              |
+
+##### Responses
+
+> | http code     | content-type                      | response                                                            |
+> |---------------|-----------------------------------|---------------------------------------------------------------------|
+> | `200`         | `text/plain;charset=UTF-8`        | JSON data                                                           |
+
+##### Example cURL
+
+> ```javascript
+>  curl -X DELTE -H "Content-Type: application/json" http://localhost:10222/api/v1/policies/my_policy
+> ```
+
+</details>
+
+## Policy RFC (v1)
 
 ```yaml
 policy_name:
