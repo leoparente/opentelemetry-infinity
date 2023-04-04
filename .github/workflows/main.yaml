@@ -24,10 +24,6 @@ jobs:
         run: |
           echo "REF_TAG=latest" >> $GITHUB_ENV
 
-      - name: Append suffix on VERSION file for develop build
-        run: |
-          echo "`cat ${{github.workspace}}/VERSION`-${{ env.REF_TAG }}" > VERSION
-
       - name: get otelcol-contrib
         run: make getotelcol
 
@@ -47,13 +43,9 @@ jobs:
         run: |
           echo "REF_TAG=latest" >> $GITHUB_ENV
 
-      - name: Append suffix on VERSION file for develop build
-        run: |
-          echo "`cat ${{github.workspace}}/VERSION`-${{ env.REF_TAG }}" > VERSION
-
       - name: Get VERSION
         run: |
-          echo "VERSION=`cat ${{github.workspace}}/VERSION`" >> $GITHUB_ENV
+          echo "VERSION=`cat ${{github.workspace}}/cmd/VERSION`" >> $GITHUB_ENV
 
       - name: Debug version
         run: echo ${{ env.VERSION }}
@@ -65,11 +57,11 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}        
 
-      - name: Build diode service
+      - name: Build otel infinity service
         shell: bash
         run: |
            make container
 
-      - name: Push diode service container
+      - name: Push otel infinity container
         run: |
           docker push -a ghcr.io/leoparente/opentelemetry-infinity
