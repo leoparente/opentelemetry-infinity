@@ -13,13 +13,14 @@ Opentelemetry Infinity provison [otel-collector-contrib](https://github.com/open
 
 ```yaml
 policy_name:
+  #Optional
   feature_gates:
     - confmap.expandEnabled
     - exporter.datadog.hostname.preview
   #TODO: set not implemented yet
   set:
     processors.batch.timeout: 2s
-  #Same configuration that you would use inside the config file passed to a otel-collector
+  #Required: Same configuration that you would use inside the config file passed to a otel-collector
   config:
     receivers:
       otlp:
