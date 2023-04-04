@@ -128,21 +128,10 @@ func (r *Runner) Start(ctx context.Context, cancelFunc context.CancelFunc) error
 	if r.cmd.Err != nil {
 		return r.cmd.Err
 	}
-
-	// stdout, err := r.cmd.StdoutPipe()
-	// if err != nil {
-	// 	return err
-	// }
 	stderr, err := r.cmd.StderrPipe()
 	if err != nil {
 		return err
 	}
-	// go func() {
-	// 	scanner := bufio.NewScanner(stdout)
-	// 	for scanner.Scan() {
-	// 		r.logger.Info("otelcol-contrib", zap.String("policy", r.policyName), zap.String("log", scanner.Text()))
-	// 	}
-	// }()
 	go func() {
 		scanner := bufio.NewScanner(stderr)
 		for scanner.Scan() {
