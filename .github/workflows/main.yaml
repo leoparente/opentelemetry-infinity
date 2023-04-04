@@ -27,6 +27,10 @@ jobs:
       - name: Append suffix on VERSION file for develop build
         run: |
           echo "`cat ${{github.workspace}}/VERSION`-${{ env.REF_TAG }}" > VERSION
+
+      - name: get otelcol-contrib
+        run: make getotelcol
+
       - name: Build binnary (go build only)
         run: make binary
           
