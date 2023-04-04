@@ -70,4 +70,4 @@ jobs:
 
       - name: Push diode service container
         run: |
-          docker push -a leoparente/opentelemetry-infinity
+          docker push -a ghcr.io/leoparente/opentelemetry-infinity
