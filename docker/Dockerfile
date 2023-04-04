@@ -5,7 +5,7 @@ ARG GOARM
 WORKDIR /go/src/github.com/leoparente/opentelemetry-infinity
 COPY . .
 RUN apk update \
-    && apk add make build-base
+    && apk add make build-base dpkg-dev
 RUN make getotelcol \
     && CGO_ENABLED=1 make binary \
     && mv build/otel-infinity /exe
