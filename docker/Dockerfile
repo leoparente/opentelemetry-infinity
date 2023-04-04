@@ -6,7 +6,8 @@ WORKDIR /go/src/github.com/leoparente/opentelemetry-infinity
 COPY . .
 RUN apk update \
     && apk add make build-base
-RUN CGO_ENABLED=1 make binary \
+RUN make getotelcol \
+    && CGO_ENABLED=1 make binary \
     && mv build/otel-infinity /exe
 
 FROM alpine:latest
