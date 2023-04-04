@@ -28,7 +28,7 @@ jobs:
         run: |
           echo "`cat ${{github.workspace}}/VERSION`-${{ env.REF_TAG }}" > VERSION
       - name: Build binnary (go build only)
-        run: make agent_bin
+        run: make binary
           
   package:
     if: ${{ github.event_name != 'pull_request' }} 
