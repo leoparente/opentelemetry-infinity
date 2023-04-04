@@ -62,7 +62,7 @@ jobs:
       - name: Build diode service
         shell: bash
         run: |
-          make container
+           make container
 
       - name: Push diode service container
         run: |
