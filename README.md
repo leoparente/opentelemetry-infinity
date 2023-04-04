@@ -9,6 +9,18 @@ Opentelemetry Infinity provison [otel-collector-contrib](https://github.com/open
 
 **3. Compatibility**: `opentelemetry-infinity` is basically a wrapper over the official `opentelemetry-collector` which has not released a version `1.0` yet, i.e., breaking changes are expected. Any changes that occurs on its CLI will be reflected in this project.
 
+## REST API
+The default `otlpinf` address is `localhost:10222`. to change that you can specify host and port when starting `otlpinf`:
+```sh
+./otlinf run -a {host} -p {port}
+```
+
+## Docker Image
+You can download and run `otlpinf` using docker image:
+```
+docker run --net=host ghcr.io/leoparente/opentelemetry-infinity run
+```
+
 ## Policy RFC (v1) 
 
 ```yaml
