@@ -1,6 +1,7 @@
 package runner
 
 import (
+	"bufio"
 	"context"
 	"errors"
 	"os"
@@ -41,6 +42,7 @@ type State struct {
 	StatusText    string    `yaml:"status"`
 	startTime     time.Time `yaml:"start_time"`
 	RestartCount  int64     `yaml:"restart_count"`
+	LastLog       string    `yaml:"-"`
 	LastError     string    `yaml:"last_error"`
 	LastRestartTS time.Time `yaml:"last_restart_time"`
 }
@@ -73,7 +75,8 @@ func GetCapabilities() ([]byte, error) {
 }
 
 func New(logger *zap.Logger, policyName string, policyDir string) Runner {
-	return Runner{logger: logger, policyName: policyName, policyDir: policyDir, errChan: make(chan string)}
+	channel := make(chan string)
+	return Runner{logger: logger, policyName: policyName, policyDir: policyDir, errChan: channel}
 }
 
 func (r *Runner) Configure(c *config.Policy) error {
@@ -122,11 +125,42 @@ func (r *Runner) Start(ctx context.Context, cancelFunc context.CancelFunc) error
 	defer exe.Close()
 
 	r.cmd = exe.CommandContext(ctx, sOptions...)
-	r.cmd.Stdout = &RunnerStdout{r.logger, r.policyName}
-	r.cmd.Stderr = &RunnerStderr{r.logger, r.policyName, r.errChan}
+	if r.cmd.Err != nil {
+		return r.cmd.Err
+	}
+
+	// stdout, err := r.cmd.StdoutPipe()
+	// if err != nil {
+	// 	return err
+	// }
+	stderr, err := r.cmd.StderrPipe()
+	if err != nil {
+		return err
+	}
+	// go func() {
+	// 	scanner := bufio.NewScanner(stdout)
+	// 	for scanner.Scan() {
+	// 		r.logger.Info("otelcol-contrib", zap.String("policy", r.policyName), zap.String("log", scanner.Text()))
+	// 	}
+	// }()
+	go func() {
+		scanner := bufio.NewScanner(stderr)
+		for scanner.Scan() {
+			r.state.LastLog = scanner.Text()
+			r.logger.Info("otelcol-contrib", zap.String("policy", r.policyName), zap.String("log", r.state.LastLog))
+			if r.cmd.Err != nil {
+				r.errChan <- r.state.LastLog
+			}
+		}
+	}()
 	if err = r.cmd.Start(); err != nil {
 		return err
 	}
+	go func() {
+		if err := r.cmd.Wait(); err != nil {
+			r.errChan <- r.state.LastLog
+		}
+	}()
 	reg, err := regexp.Compile("[^a-zA-Z0-9:(), ]+")
 	if err != nil {
 		return err
@@ -163,6 +197,7 @@ func (r *Runner) Stop(ctx context.Context) error {
 	if err := r.cmd.Cancel(); err != nil {
 		return err
 	}
+	close(r.errChan)
 	r.setStatus(Offline)
 	pid := r.cmd.ProcessState.Pid()
 	exitCode := r.cmd.ProcessState.ExitCode()
@@ -181,5 +216,4 @@ func (r *Runner) GetStatus() State {
 func (r *Runner) setStatus(s Status) {
 	r.state.Status = s
 	r.state.StatusText = MapStatus[s]
-	return
 }

@@ -30,7 +30,7 @@ type OltpInf struct {
 }
 
 func New(logger *zap.Logger, c *config.Config) (OltpInf, error) {
-	return OltpInf{logger: logger, conf: c}, nil
+	return OltpInf{logger: logger, conf: c, policies: make(map[string]RunnerInfo)}, nil
 }
 
 func (o *OltpInf) Start(ctx context.Context, cancelFunc context.CancelFunc) error {

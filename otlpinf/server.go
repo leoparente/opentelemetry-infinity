@@ -11,7 +11,6 @@ import (
 
 	yson "github.com/ghodss/yaml"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 	"github.com/leoparente/otlpinf/config"
 	"github.com/leoparente/otlpinf/runner"
 	"gopkg.in/yaml.v3"
@@ -30,7 +29,7 @@ func (o *OltpInf) startServer() error {
 	o.echoSv = echo.New()
 	o.echoSv.HideBanner = true
 	o.echoSv.Use(ZapLogger(o.logger))
-	o.echoSv.Use(middleware.Recover())
+	//o.echoSv.Use(middleware.Recover())
 
 	// Routes
 	o.echoSv.GET("/api/v1/status", o.getStatus)

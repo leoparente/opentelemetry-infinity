@@ -1,27 +1,27 @@
 package runner
 
-import "go.uber.org/zap"
+import (
+	"bytes"
+	"io"
 
-type RunnerStdout struct {
-	logger     *zap.Logger
-	policyName string
-}
+	"go.uber.org/zap"
+)
 
-type RunnerStderr struct {
+type RunnerOutput struct {
+	err        bool
 	logger     *zap.Logger
 	policyName string
 	channel    chan<- string
 }
 
-func (rs *RunnerStdout) Write(p []byte) (n int, err error) {
-	rs.logger.Info("otelcol-contrib stdout", zap.String("policy", rs.policyName), zap.ByteString("log", p))
-	n = len(p)
-	return
-}
+var _ io.Writer = (*RunnerOutput)(nil)
 
-func (rs *RunnerStderr) Write(p []byte) (n int, err error) {
-	rs.logger.Error("runner stderr", zap.String("policy", rs.policyName), zap.ByteString("log", p))
-	rs.channel <- string(p)
-	n = len(p)
-	return
+func (rs *RunnerOutput) Write(p []byte) (n int, err error) {
+	if rs.err {
+		rs.logger.Error("otelcol-contrib stderr", zap.String("policy", rs.policyName), zap.String("log", bytes.NewBuffer(p).String()))
+		rs.channel <- string(p)
+	} else {
+		rs.logger.Info("otelcol-contrib stdout", zap.String("policy", rs.policyName), zap.Any("log", bytes.NewBuffer(p).String()))
+	}
+	return len(p), nil
 }
