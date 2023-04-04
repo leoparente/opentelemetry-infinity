@@ -11,6 +11,31 @@ Opentelemetry Infinity provison [otel-collector-contrib](https://github.com/open
 
 ## Policy RFC (v1) 
 
-```
-
+```yaml
+policy_name:
+  feature_gates:
+    - confmap.expandEnabled
+    - exporter.datadog.hostname.preview
+  #TODO: set not implemented yet
+  set:
+    processors.batch.timeout: 2s
+  #Same configuration that you would use inside the config file passed to a otel-collector
+  config:
+    receivers:
+      otlp:
+        protocols:
+          http:
+          grpc: 
+ 
+    exporters:
+      logging:
+        loglevel: debug
+      
+    service:
+      pipelines:
+        metrics:
+          receivers:
+          - otlp
+          exporters:
+          - logging
 ```
