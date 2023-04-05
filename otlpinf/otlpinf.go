@@ -44,7 +44,6 @@ func (o *OltpInf) Start(ctx context.Context, cancelFunc context.CancelFunc) erro
 	if err != nil {
 		return err
 	}
-	defer os.RemoveAll(o.policiesDir)
 	o.capabilities, err = runner.GetCapabilities()
 	if err != nil {
 		return err
@@ -67,15 +66,8 @@ func (o *OltpInf) Start(ctx context.Context, cancelFunc context.CancelFunc) erro
 
 func (o *OltpInf) Stop(ctx context.Context) {
 	o.logger.Info("routine call for stop otlpinf", zap.Any("routine", ctx.Value("routine")))
-	for name, b := range o.policies {
-		if state := b.Instance.GetStatus(); state.Status == runner.Running {
-			o.logger.Debug("stopping runner", zap.String("policy", name))
-			if err := b.Instance.Stop(ctx); err != nil {
-				o.logger.Error("error while stopping the runner", zap.String("policy", name))
-			}
-		}
-	}
-	defer o.cancelFunction()
+	defer os.RemoveAll(o.policiesDir)
+	o.cancelFunction()
 }
 
 func (o *OltpInf) RestartRunner(ctx context.Context, name string, reason string) error {

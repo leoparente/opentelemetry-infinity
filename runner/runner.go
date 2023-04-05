@@ -182,11 +182,11 @@ func (r *Runner) Start(ctx context.Context, cancelFunc context.CancelFunc) error
 
 func (r *Runner) Stop(ctx context.Context) error {
 	r.logger.Info("routine call to stop runner", zap.Any("routine", ctx.Value("routine")))
-	defer r.cancelFunc()
+	close(r.errChan)
+	r.cancelFunc()
 	if err := r.cmd.Cancel(); err != nil {
 		return err
 	}
-	close(r.errChan)
 	r.setStatus(Offline)
 	pid := r.cmd.ProcessState.Pid()
 	exitCode := r.cmd.ProcessState.ExitCode()
