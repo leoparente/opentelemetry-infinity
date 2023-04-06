@@ -58,6 +58,7 @@ type Runner struct {
 	ctx          context.Context
 	cmd          *exec.Cmd
 	errChan      chan string
+	stopped      bool
 }
 
 func GetCapabilities() ([]byte, error) {
@@ -76,7 +77,7 @@ func GetCapabilities() ([]byte, error) {
 
 func New(logger *zap.Logger, policyName string, policyDir string) Runner {
 	channel := make(chan string)
-	return Runner{logger: logger, policyName: policyName, policyDir: policyDir, errChan: channel}
+	return Runner{logger: logger, policyName: policyName, policyDir: policyDir, errChan: channel, stopped: false}
 }
 
 func (r *Runner) Configure(c *config.Policy) error {
@@ -173,6 +174,7 @@ func (r *Runner) Start(ctx context.Context, cancelFunc context.CancelFunc) error
 				r.setStatus(RunnerError)
 			case <-r.ctx.Done():
 				r.Stop(r.ctx)
+				return
 			}
 		}
 	}()
@@ -182,15 +184,16 @@ func (r *Runner) Start(ctx context.Context, cancelFunc context.CancelFunc) error
 
 func (r *Runner) Stop(ctx context.Context) error {
 	r.logger.Info("routine call to stop runner", zap.Any("routine", ctx.Value("routine")))
-	close(r.errChan)
-	r.cancelFunc()
-	if err := r.cmd.Cancel(); err != nil {
-		return err
+	if r.stopped {
+		return nil
 	}
+	close(r.errChan)
+	defer r.cancelFunc()
 	r.setStatus(Offline)
 	pid := r.cmd.ProcessState.Pid()
 	exitCode := r.cmd.ProcessState.ExitCode()
 	r.logger.Info("runner process stopped", zap.Int("pid", pid), zap.Int("exit_code", exitCode))
+	r.stopped = true
 	return nil
 }
 
