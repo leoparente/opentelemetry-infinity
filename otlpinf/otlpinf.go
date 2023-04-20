@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/labstack/echo/v4"
+	"github.com/gin-gonic/gin"
 	"github.com/leoparente/otlpinf/config"
 	"github.com/leoparente/otlpinf/runner"
 	"go.uber.org/zap"
@@ -25,7 +25,7 @@ type OltpInf struct {
 	policiesDir    string
 	ctx            context.Context
 	cancelFunction context.CancelFunc
-	echoSv         *echo.Echo
+	router         *gin.Engine
 	capabilities   []byte
 }
 

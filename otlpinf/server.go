@@ -6,12 +6,11 @@ import (
 	"io"
 	"net/http"
 	"strconv"
-	"strings"
 	"time"
 
 	yson "github.com/ghodss/yaml"
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
+	ginzap "github.com/gin-contrib/zap"
+	"github.com/gin-gonic/gin"
 	"github.com/leoparente/otlpinf/config"
 	"github.com/leoparente/otlpinf/runner"
 	"gopkg.in/yaml.v3"
@@ -22,131 +21,146 @@ type ReturnPolicyData struct {
 	config.Policy
 }
 
-func messageReturn(value string) []byte {
-	ret := strings.Join([]string{`{"message":"`, value, `"}`}, "")
-	return []byte(ret)
+type ReturnValue struct {
+	Message string `json:"message"`
 }
+
 func (o *OltpInf) startServer() error {
-	o.echoSv = echo.New()
-	o.echoSv.HideBanner = true
-	o.echoSv.Use(ZapLogger(o.logger))
-	o.echoSv.Use(middleware.Recover())
+	o.router = gin.New()
+
+	o.router.Use(ginzap.Ginzap(o.logger, time.RFC3339, true))
+	o.router.Use(ginzap.RecoveryWithZap(o.logger, true))
 
 	// Routes
-	o.echoSv.GET("/api/v1/status", o.getStatus)
-	o.echoSv.GET("/api/v1/capabilities", o.getCapabilities)
-	o.echoSv.GET("/api/v1/policies", o.getPolicies)
-	o.echoSv.POST("/api/v1/policies", o.createPolicy)
-	o.echoSv.GET("/api/v1/policies/:policy", o.getPolicy)
-	o.echoSv.DELETE("/api/v1/policies/:policy", o.deletePolicy)
+	o.router.GET("/api/v1/status", o.getStatus)
+	o.router.GET("/api/v1/capabilities", o.getCapabilities)
+	o.router.GET("/api/v1/policies", o.getPolicies)
+	o.router.POST("/api/v1/policies", o.createPolicy)
+	o.router.GET("/api/v1/policies/:policy", o.getPolicy)
+	o.router.DELETE("/api/v1/policies/:policy", o.deletePolicy)
 
 	serverHost := o.conf.OtlpInf.ServerHost
 	serverPort := strconv.FormatUint(o.conf.OtlpInf.ServerPort, 10)
 	go func() {
-		if err := o.echoSv.Start(serverHost + ":" + serverPort); err != nil && err != http.ErrServerClosed {
+		if err := o.router.Run(serverHost + ":" + serverPort); err != nil {
 			o.logger.Info("shutting down the server")
 		}
 	}()
 	return nil
 }
 
-func (o *OltpInf) getStatus(c echo.Context) error {
+func (o *OltpInf) getStatus(c *gin.Context) {
 	o.stat.UpTime = time.Since(o.stat.StartTime)
-	return c.JSONPretty(http.StatusOK, o.stat, "  ")
+	c.IndentedJSON(http.StatusOK, o.stat)
 }
 
-func (o *OltpInf) getCapabilities(c echo.Context) error {
+func (o *OltpInf) getCapabilities(c *gin.Context) {
 	j, err := yson.YAMLToJSON(o.capabilities)
 	if err != nil {
-		return err
+		c.IndentedJSON(http.StatusBadRequest, ReturnValue{err.Error()})
+		return
 	}
 	var ret interface{}
 	err = json.Unmarshal(j, &ret)
 	if err != nil {
-		return err
+		c.IndentedJSON(http.StatusBadRequest, ReturnValue{err.Error()})
+		return
 	}
-	return c.JSONPretty(http.StatusOK, ret, "  ")
+	c.IndentedJSON(http.StatusOK, ret)
 }
 
-func (o *OltpInf) getPolicies(c echo.Context) error {
+func (o *OltpInf) getPolicies(c *gin.Context) {
 	policies := make([]string, 0, len(o.policies))
 	for k := range o.policies {
 		policies = append(policies, k)
 	}
-	return c.JSONPretty(http.StatusOK, policies, "  ")
+	c.IndentedJSON(http.StatusOK, policies)
 }
 
-func (o *OltpInf) getPolicy(c echo.Context) error {
+func (o *OltpInf) getPolicy(c *gin.Context) {
 	policy := c.Param("policy")
 	rInfo, ok := o.policies[policy]
 	if ok {
 		y := map[string]ReturnPolicyData{policy: {rInfo.Instance.GetStatus(), rInfo.Policy}}
 		ret, err := yaml.Marshal(y)
 		if err != nil {
-			return c.JSONBlob(http.StatusBadRequest, messageReturn(err.Error()))
+			c.IndentedJSON(http.StatusBadRequest, ReturnValue{err.Error()})
+			return
+
 		}
-		return c.Blob(http.StatusOK, "application/x-yaml", ret)
+		c.YAML(http.StatusOK, ret)
 	} else {
-		return c.JSONBlob(http.StatusNotFound, messageReturn("Policy Not Found"))
+		c.IndentedJSON(http.StatusNotFound, ReturnValue{"policy not found"})
+		return
 	}
 }
 
-func (o *OltpInf) createPolicy(c echo.Context) error {
-	if t := c.Request().Header.Get("Content-type"); t != "application/x-yaml" {
-		return c.JSONBlob(http.StatusBadRequest,
-			messageReturn("invalid Content-Type. Only 'application/x-yaml' is supported"))
+func (o *OltpInf) createPolicy(c *gin.Context) {
+	if t := c.Request.Header.Get("Content-type"); t != "application/x-yaml" {
+		c.IndentedJSON(http.StatusBadRequest, ReturnValue{"invalid Content-Type. Only 'application/x-yaml' is supported"})
+		return
 	}
-	body, err := io.ReadAll(c.Request().Body)
+	body, err := io.ReadAll(c.Request.Body)
 	if err != nil {
-		return err
+		c.IndentedJSON(http.StatusBadRequest, ReturnValue{err.Error()})
+		return
 	}
 	var payload map[string]config.Policy
 	if err = yaml.Unmarshal(body, &payload); err != nil {
-		return c.JSONBlob(http.StatusBadRequest, messageReturn(err.Error()))
+		c.IndentedJSON(http.StatusBadRequest, ReturnValue{err.Error()})
+		return
 	}
 	if len(payload) > 1 {
-		return c.JSONBlob(http.StatusBadRequest,
-			messageReturn("only single policy allowed per request"))
+		c.IndentedJSON(http.StatusBadRequest, ReturnValue{"only single policy allowed per request"})
+		return
 	}
 	var policy string
 	var data config.Policy
 	for policy, data = range payload {
 		_, ok := o.policies[policy]
 		if ok {
-			return c.JSONBlob(http.StatusForbidden, messageReturn("policy already exists"))
+			c.IndentedJSON(http.StatusForbidden, ReturnValue{"policy already exists"})
+			return
+
 		}
 		if len(data.Config) == 0 {
-			return c.JSONBlob(http.StatusForbidden, messageReturn("config field is required"))
+			c.IndentedJSON(http.StatusForbidden, ReturnValue{"config field is required"})
+			return
+
 		}
 	}
 
 	r := runner.New(o.logger, policy, o.policiesDir)
 	if err := r.Configure(&data); err != nil {
-		return c.JSONBlob(http.StatusBadRequest, messageReturn(err.Error()))
+		c.IndentedJSON(http.StatusBadRequest, ReturnValue{err.Error()})
+		return
 	}
 	runnerCtx := context.WithValue(o.ctx, "routine", policy)
 	if err := r.Start(context.WithCancel(runnerCtx)); err != nil {
-		return c.JSONBlob(http.StatusBadRequest, messageReturn(err.Error()))
+		c.IndentedJSON(http.StatusBadRequest, ReturnValue{err.Error()})
+		return
 	}
 	y := map[string]ReturnPolicyData{policy: {r.GetStatus(), data}}
 	ret, err := yaml.Marshal(y)
 	if err != nil {
-		return c.JSONBlob(http.StatusBadRequest, messageReturn(err.Error()))
+		c.IndentedJSON(http.StatusBadRequest, ReturnValue{err.Error()})
+		return
 	}
 	o.policies[policy] = RunnerInfo{Policy: data, Instance: r}
-	return c.Blob(http.StatusOK, "application/x-yaml", ret)
+	c.YAML(http.StatusOK, ret)
 }
 
-func (o *OltpInf) deletePolicy(c echo.Context) error {
+func (o *OltpInf) deletePolicy(c *gin.Context) {
 	policy := c.Param("policy")
 	r, ok := o.policies[policy]
 	if ok {
 		if err := r.Instance.Stop(o.ctx); err != nil {
-			return c.JSONBlob(http.StatusBadRequest, messageReturn(err.Error()))
+			c.IndentedJSON(http.StatusBadRequest, ReturnValue{err.Error()})
+			return
 		}
 		delete(o.policies, policy)
-		return c.JSONBlob(http.StatusOK, messageReturn(policy+" was deleted"))
+		c.IndentedJSON(http.StatusOK, ReturnValue{policy + " was deleted"})
 	} else {
-		return c.JSONBlob(http.StatusNotFound, messageReturn("Policy Not Found"))
+		c.IndentedJSON(http.StatusNotFound, ReturnValue{"policy not found"})
 	}
 }
