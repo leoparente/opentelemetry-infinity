@@ -13,6 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/leoparente/otlpinf/config"
 	"github.com/leoparente/otlpinf/runner"
+	"go.uber.org/zap"
 	"gopkg.in/yaml.v3"
 )
 
@@ -46,7 +47,7 @@ func (o *OltpInf) startServer() error {
 		serv := serverHost + ":" + serverPort
 		o.logger.Info("starting otlp_inf server at: " + serv)
 		if err := o.router.Run(serv); err != nil {
-			o.logger.Info("shutting down the server")
+			o.logger.Fatal("shutting down the server", zap.Error(err))
 		}
 	}()
 	return nil
