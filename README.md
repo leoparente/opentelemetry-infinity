@@ -168,9 +168,8 @@ The default `otlpinf` address is `localhost:10222`. to change that you can speci
 policy_name:
   #Optional
   feature_gates:
-    - confmap.expandEnabled
     - exporter.datadog.hostname.preview
-  #TODO: set not implemented yet
+  #Optional
   set:
     processors.batch.timeout: 2s
   #Required: Same configuration that you would use inside the config file passed to a otel-collector

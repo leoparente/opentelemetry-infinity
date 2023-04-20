@@ -26,6 +26,7 @@ type ReturnValue struct {
 }
 
 func (o *OltpInf) startServer() error {
+	gin.SetMode(gin.ReleaseMode)
 	o.router = gin.New()
 
 	o.router.Use(ginzap.Ginzap(o.logger, time.RFC3339, true))
@@ -42,7 +43,9 @@ func (o *OltpInf) startServer() error {
 	serverHost := o.conf.OtlpInf.ServerHost
 	serverPort := strconv.FormatUint(o.conf.OtlpInf.ServerPort, 10)
 	go func() {
-		if err := o.router.Run(serverHost + ":" + serverPort); err != nil {
+		serv := serverHost + ":" + serverPort
+		o.logger.Info("starting otlp_inf server at: " + serv)
+		if err := o.router.Run(serv); err != nil {
 			o.logger.Info("shutting down the server")
 		}
 	}()
@@ -81,17 +84,9 @@ func (o *OltpInf) getPolicy(c *gin.Context) {
 	policy := c.Param("policy")
 	rInfo, ok := o.policies[policy]
 	if ok {
-		y := map[string]ReturnPolicyData{policy: {rInfo.Instance.GetStatus(), rInfo.Policy}}
-		ret, err := yaml.Marshal(y)
-		if err != nil {
-			c.IndentedJSON(http.StatusBadRequest, ReturnValue{err.Error()})
-			return
-
-		}
-		c.YAML(http.StatusOK, ret)
+		c.YAML(http.StatusOK, map[string]ReturnPolicyData{policy: {rInfo.Instance.GetStatus(), rInfo.Policy}})
 	} else {
 		c.IndentedJSON(http.StatusNotFound, ReturnValue{"policy not found"})
-		return
 	}
 }
 
@@ -130,7 +125,7 @@ func (o *OltpInf) createPolicy(c *gin.Context) {
 		}
 	}
 
-	r := runner.New(o.logger, policy, o.policiesDir)
+	r := runner.New(o.logger, policy, o.policiesDir, o.conf.OtlpInf.SelfTelemetry)
 	if err := r.Configure(&data); err != nil {
 		c.IndentedJSON(http.StatusBadRequest, ReturnValue{err.Error()})
 		return
@@ -140,14 +135,8 @@ func (o *OltpInf) createPolicy(c *gin.Context) {
 		c.IndentedJSON(http.StatusBadRequest, ReturnValue{err.Error()})
 		return
 	}
-	y := map[string]ReturnPolicyData{policy: {r.GetStatus(), data}}
-	ret, err := yaml.Marshal(y)
-	if err != nil {
-		c.IndentedJSON(http.StatusBadRequest, ReturnValue{err.Error()})
-		return
-	}
 	o.policies[policy] = RunnerInfo{Policy: data, Instance: r}
-	c.YAML(http.StatusOK, ret)
+	c.YAML(http.StatusOK, map[string]ReturnPolicyData{policy: {r.GetStatus(), data}})
 }
 
 func (o *OltpInf) deletePolicy(c *gin.Context) {

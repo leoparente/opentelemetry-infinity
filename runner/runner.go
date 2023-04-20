@@ -48,17 +48,19 @@ type State struct {
 }
 
 type Runner struct {
-	logger       *zap.Logger
-	policyName   string
-	policyDir    string
-	policyFile   string
-	featureGates string
-	state        State
-	cancelFunc   context.CancelFunc
-	ctx          context.Context
-	cmd          *exec.Cmd
-	errChan      chan string
-	stopped      bool
+	logger        *zap.Logger
+	policyName    string
+	policyDir     string
+	policyFile    string
+	featureGates  string
+	sets          []string
+	selfTelemetry bool
+	state         State
+	cancelFunc    context.CancelFunc
+	ctx           context.Context
+	cmd           *exec.Cmd
+	errChan       chan string
+	stopped       bool
 }
 
 func GetCapabilities() ([]byte, error) {
@@ -75,9 +77,9 @@ func GetCapabilities() ([]byte, error) {
 	return ret, nil
 }
 
-func New(logger *zap.Logger, policyName string, policyDir string) Runner {
+func New(logger *zap.Logger, policyName string, policyDir string, selfTelemetry bool) Runner {
 	channel := make(chan string)
-	return Runner{logger: logger, policyName: policyName, policyDir: policyDir, errChan: channel, stopped: false}
+	return Runner{logger: logger, policyName: policyName, policyDir: policyDir, selfTelemetry: selfTelemetry, sets: make([]string, 0), errChan: channel, stopped: false}
 }
 
 func (r *Runner) Configure(c *config.Policy) error {
@@ -101,6 +103,12 @@ func (r *Runner) Configure(c *config.Policy) error {
 		r.featureGates = strings.Join(c.FeatureGates, ",")
 	}
 
+	if c.Set != nil {
+		for k, v := range c.Set {
+			r.sets = append(r.sets, strings.Join([]string{"--set", k, v}, "="))
+		}
+	}
+
 	return nil
 }
 
@@ -113,11 +121,17 @@ func (r *Runner) Start(ctx context.Context, cancelFunc context.CancelFunc) error
 		r.policyFile,
 	}
 
+	if !r.selfTelemetry {
+		sOptions = append(sOptions, "--set=service.telemetry.metrics.level=None")
+	}
+
 	if len(r.featureGates) > 0 {
 		sOptions = append(sOptions, "--feature-gates", r.featureGates)
 	}
 
-	//TODO: implement set support
+	if len(r.sets) > 0 {
+		sOptions = append(sOptions, r.sets...)
+	}
 
 	exe, err := memexec.New(otel_contrib)
 	if err != nil {

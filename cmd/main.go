@@ -22,9 +22,10 @@ import (
 var version string
 
 var (
-	Debug      bool
-	ServerHost string
-	ServerPort uint64
+	Debug         bool
+	SelfTelemetry bool
+	ServerHost    string
+	ServerPort    uint64
 )
 
 func Run(cmd *cobra.Command, args []string) {
@@ -35,6 +36,7 @@ func Run(cmd *cobra.Command, args []string) {
 	var config config.Config
 	config.Version = version
 	config.OtlpInf.Debug = Debug
+	config.OtlpInf.SelfTelemetry = SelfTelemetry
 	config.OtlpInf.ServerHost = ServerHost
 	config.OtlpInf.ServerPort = ServerPort
 
@@ -109,6 +111,7 @@ func initConfig() {
 	v.SetEnvKeyReplacer(replacer)
 	// note: viper seems to require a default (or a BindEnv) to be overridden by environment variables
 	v.SetDefault("otlp_inf.debug", false)
+	v.SetDefault("otlp_inf.self_telemetry", false)
 	v.SetDefault("otlp_inf.server_host", "localhost")
 	v.SetDefault("otlp_inf.server_port", 10222)
 	cobra.CheckErr(viper.MergeConfigMap(v.AllSettings()))
@@ -128,6 +131,7 @@ func main() {
 	}
 
 	runCmd.PersistentFlags().BoolVarP(&Debug, "debug", "d", false, "Enable verbose (debug level) output")
+	runCmd.PersistentFlags().BoolVarP(&SelfTelemetry, "self_telemetry", "s", false, "Enable self telemetry for collectors. It is disabled by default to avoid port conflict")
 	runCmd.PersistentFlags().StringVarP(&ServerHost, "server_host", "a", "localhost", "Define REST Host")
 	runCmd.PersistentFlags().Uint64VarP(&ServerPort, "server_port", "p", 10222, "Define REST Port")
 
