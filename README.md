@@ -37,7 +37,7 @@ The default `otlpinf` address is `localhost:10222`. to change that you can speci
 
 > | http code     | content-type                      | response                                                            |
 > |---------------|-----------------------------------|---------------------------------------------------------------------|
-> | `200`         | `text/plain;charset=UTF-8`        | JSON data                                                           |
+> | `200`         | `application/json; charset=utf-8` | JSON data                                                           |
 
 ##### Example cURL
 
@@ -58,7 +58,7 @@ The default `otlpinf` address is `localhost:10222`. to change that you can speci
 
 > | http code     | content-type                      | response                                                            |
 > |---------------|-----------------------------------|---------------------------------------------------------------------|
-> | `200`         | `text/plain;charset=UTF-8`        | JSON data                                                           |
+> | `200`         | `application/json; charset=utf-8` | JSON data                                                           |
 
 ##### Example cURL
 
@@ -81,7 +81,7 @@ The default `otlpinf` address is `localhost:10222`. to change that you can speci
 
 > | http code     | content-type                      | response                                                            |
 > |---------------|-----------------------------------|---------------------------------------------------------------------|
-> | `200`         | `text/plain;charset=UTF-8`        | JSON array containing all applied policy names                      |
+> | `200`         | `application/json; charset=utf-8` | JSON array containing all applied policy names                      |
 
 ##### Example cURL
 
@@ -99,14 +99,20 @@ The default `otlpinf` address is `localhost:10222`. to change that you can speci
 
 > | name      |  type     | data type               | description                                                           |
 > |-----------|-----------|-------------------------|-----------------------------------------------------------------------|
-> | None      |  required | YAML object             | yaml format specified in [Policy RFC](#policy-rfc-v1) 
-
+> | None      |  required | YAML object             | yaml format specified in [Policy RFC](#policy-rfc-v1)                 |
+ 
 
 ##### Responses
 
-> | http code     | content-type                      | response                                                            |
-> |---------------|-----------------------------------|---------------------------------------------------------------------|
-> | `200`         | `text/plain;charset=UTF-8`        | JSON data                                                           |
+> | http code     | content-type                       | response                                                            |
+> |---------------|------------------------------------|---------------------------------------------------------------------|
+> | `200`         | `application/x-yaml; charset=UTF-8`| YAML object                                                         |
+> | `400`         | `application/json; charset=UTF-8`  | `{ "message": "invalid Content-Type. Only 'application/x-yaml' is supported" }`|
+> | `400`         | `application/json; charset=UTF-8`  | Any policy error                                                    |
+> | `400`         | `application/json; charset=UTF-8`  | `{ "message": "only single policy allowed per request" }`           |
+> | `403`         | `application/json; charset=UTF-8`  | `{ "message": "policy already exists" }`                            |
+> | `403`         | `application/json; charset=UTF-8`  | `{ "message": "config field is required" }`                         |
+ 
 
 ##### Example cURL
 
@@ -127,14 +133,15 @@ The default `otlpinf` address is `localhost:10222`. to change that you can speci
 
 ##### Responses
 
-> | http code     | content-type                      | response                                                            |
-> |---------------|-----------------------------------|---------------------------------------------------------------------|
-> | `200`         | `text/plain;charset=UTF-8`        | JSON data                                                           |
+> | http code     | content-type                        | response                                                            |
+> |---------------|-------------------------------------|---------------------------------------------------------------------|
+> | `200`         | `application/x-yaml; charset=UTF-8` | YAML object                                                         |
+> | `404`         | `application/json; charset=UTF-8`   | `{ "message": "policy not found" }`                                 |
 
 ##### Example cURL
 
 > ```javascript
->  curl -X GET -H "Content-Type: application/json" http://localhost:10222/api/v1/policies/my_policy
+>  curl -X GET http://localhost:10222/api/v1/policies/my_policy
 > ```
 
 </details>
@@ -152,12 +159,13 @@ The default `otlpinf` address is `localhost:10222`. to change that you can speci
 
 > | http code     | content-type                      | response                                                            |
 > |---------------|-----------------------------------|---------------------------------------------------------------------|
-> | `200`         | `text/plain;charset=UTF-8`        | JSON data                                                           |
+> | `200`         | `application/json; charset=UTF-8` | `{ "message": "my_policy was deleted" }`                            |
+> | `404`         | `application/json; charset=UTF-8` | `{ "message": "policy not found" }`                                 |
 
 ##### Example cURL
 
 > ```javascript
->  curl -X DELTE -H "Content-Type: application/json" http://localhost:10222/api/v1/policies/my_policy
+>  curl -X DELETE http://localhost:10222/api/v1/policies/my_policy
 > ```
 
 </details>
