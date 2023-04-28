@@ -115,7 +115,7 @@ func (o *OltpInf) createPolicy(c *gin.Context) {
 	for policy, data = range payload {
 		_, ok := o.policies[policy]
 		if ok {
-			c.IndentedJSON(http.StatusForbidden, ReturnValue{"policy already exists"})
+			c.IndentedJSON(http.StatusConflict, ReturnValue{"policy already exists"})
 			return
 
 		}
@@ -137,7 +137,7 @@ func (o *OltpInf) createPolicy(c *gin.Context) {
 		return
 	}
 	o.policies[policy] = RunnerInfo{Policy: data, Instance: r}
-	c.YAML(http.StatusOK, map[string]ReturnPolicyData{policy: {r.GetStatus(), data}})
+	c.YAML(http.StatusCreated, map[string]ReturnPolicyData{policy: {r.GetStatus(), data}})
 }
 
 func (o *OltpInf) deletePolicy(c *gin.Context) {

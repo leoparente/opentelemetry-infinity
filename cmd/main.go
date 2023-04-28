@@ -34,17 +34,14 @@ func Run(cmd *cobra.Command, args []string) {
 
 	// configuration
 	var config config.Config
-	config.Version = version
-	config.OtlpInf.Debug = Debug
-	config.OtlpInf.SelfTelemetry = SelfTelemetry
-	config.OtlpInf.ServerHost = ServerHost
-	config.OtlpInf.ServerPort = ServerPort
 
 	err := viper.Unmarshal(&config)
 	if err != nil {
 		cobra.CheckErr(fmt.Errorf("opentelemetry-infinity start up error (config): %w", err))
 		os.Exit(1)
 	}
+
+	config.Version = version
 
 	// logger
 	var logger *zap.Logger
@@ -110,10 +107,10 @@ func initConfig() {
 	replacer := strings.NewReplacer(".", "_")
 	v.SetEnvKeyReplacer(replacer)
 	// note: viper seems to require a default (or a BindEnv) to be overridden by environment variables
-	v.SetDefault("otlp_inf.debug", false)
-	v.SetDefault("otlp_inf.self_telemetry", false)
-	v.SetDefault("otlp_inf.server_host", "localhost")
-	v.SetDefault("otlp_inf.server_port", 10222)
+	v.SetDefault("otlp_inf.debug", Debug)
+	v.SetDefault("otlp_inf.self_telemetry", SelfTelemetry)
+	v.SetDefault("otlp_inf.server_host", ServerHost)
+	v.SetDefault("otlp_inf.server_port", ServerPort)
 	cobra.CheckErr(viper.MergeConfigMap(v.AllSettings()))
 }
 

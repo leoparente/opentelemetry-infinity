@@ -124,12 +124,12 @@ docker run --net=host ghcr.io/leoparente/opentelemetry-infinity run -a {host} -p
 
 > | http code     | content-type                       | response                                                            |
 > |---------------|------------------------------------|---------------------------------------------------------------------|
-> | `200`         | `application/x-yaml; charset=UTF-8`| YAML object                                                         |
+> | `201`         | `application/x-yaml; charset=UTF-8`| YAML object                                                         |
 > | `400`         | `application/json; charset=UTF-8`  | `{ "message": "invalid Content-Type. Only 'application/x-yaml' is supported" }`|
 > | `400`         | `application/json; charset=UTF-8`  | Any policy error                                                    |
 > | `400`         | `application/json; charset=UTF-8`  | `{ "message": "only single policy allowed per request" }`           |
-> | `403`         | `application/json; charset=UTF-8`  | `{ "message": "policy already exists" }`                            |
 > | `403`         | `application/json; charset=UTF-8`  | `{ "message": "config field is required" }`                         |
+> | `409`         | `application/json; charset=UTF-8`  | `{ "message": "policy already exists" }`                            |
  
 
 ##### Example cURL
