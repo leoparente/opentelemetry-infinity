@@ -30,7 +30,8 @@ jobs:
       - name: Build binnary (go build only)
         run: make build
 
-      - shell: bash
+      - name: Get VERSION
+        shell: bash
         run: |
           version=$(runner/otelcol-contrib -v | cut -d ' ' -f 3)
           echo $version > VERSION.txt
@@ -54,11 +55,13 @@ jobs:
         run: |
           echo "REF_TAG=latest" >> $GITHUB_ENV
 
-      - name: Get VERSION
+      - name: Download VERSION
         uses: actions/download-artifact@v3
         with:
           name: VERSION
-      - shell: bash
+      
+      - name: Get VERSION
+        shell: bash
         run: |
           echo "VERSION=`cat VERSION.txt`" >> $GITHUB_ENV
 
