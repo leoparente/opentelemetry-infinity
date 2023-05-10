@@ -1,16 +1,16 @@
-FROM golang:1.20-alpine AS builder
+FROM golang:1.20 AS builder
 ARG GOARCH
 ARG GOARM
 
 WORKDIR /go/src/github.com/leoparente/opentelemetry-infinity
 COPY . .
-RUN apk update \
-    && apk add make build-base dpkg-dev
+RUN apt update -y \
+    && apt install make build-essential dpkg-dev curl ca-certificates libasan6 wget gzip -y
 RUN make getotelcol \
     && CGO_ENABLED=1 make binary \
     && mv build/otel-infinity /exe
 
-FROM alpine:latest
+FROM debian:bullseye-slim
 
 RUN mkdir /opt/otel-infinity/
 
