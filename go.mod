@@ -1,4 +1,4 @@
-module github.com/leoparente/otlpinf
+module github.com/leoparente/opentelemetry-infinity
 
 go 1.20
 
