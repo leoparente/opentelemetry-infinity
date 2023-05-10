@@ -45,6 +45,8 @@ jobs:
 
       - name: Get VERSION
         run: |
+          ls ${{github.workspace}}
+          ls ${{github.workspace}}/runner
           echo "VERSION=`${{github.workspace}}/runner/otelcol-contrib -v | cut -d ' ' -f 3`" >> $GITHUB_ENV
 
       - name: Debug version
