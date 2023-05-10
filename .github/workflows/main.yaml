@@ -29,6 +29,10 @@ jobs:
 
       - name: Build binnary (go build only)
         run: make build
+      - uses: actions/upload-artifact@v3
+        with:
+          name: otel-infinity
+          path: build/otel-infinity
           
   package:
     if: ${{ github.event_name != 'pull_request' }} 
@@ -45,8 +49,6 @@ jobs:
 
       - name: Get VERSION
         run: |
-          ls ${{github.workspace}}
-          ls ${{github.workspace}}/runner
           echo "VERSION=`${{github.workspace}}/runner/otelcol-contrib -v | cut -d ' ' -f 3`" >> $GITHUB_ENV
 
       - name: Debug version
