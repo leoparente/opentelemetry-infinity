@@ -10,7 +10,7 @@ RUN make getotelcol \
     && CGO_ENABLED=1 make binary \
     && mv build/otel-infinity /exe
 
-FROM alpine:latest
+FROM debian:bullseye-slim
 
 RUN mkdir /opt/otel-infinity/
 
