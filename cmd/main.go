@@ -10,8 +10,8 @@ import (
 
 	_ "embed"
 
-	"github.com/leoparente/otlpinf/config"
-	"github.com/leoparente/otlpinf/otlpinf"
+	"github.com/leoparente/opentelemetry-infinity/config"
+	"github.com/leoparente/opentelemetry-infinity/otlpinf"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
