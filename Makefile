@@ -1,14 +1,10 @@
-VERSION = $(shell cat cmd/VERSION)
+VERSION = $(shell runner/otelcol-contrib -v | cut -d ' ' -f 3)
 BUILD_DIR = build
 CGO_ENABLED ?= 0
 DOCKERHUB_REPO = ghcr.io/leoparente
 GOARCH ?= $(shell dpkg-architecture -q DEB_BUILD_ARCH)
 COMMIT_HASH = $(shell git rev-parse --short HEAD)
-
-define compile_service
-  echo "VERSION: $(VERSION)"
-	CGO_ENABLED=$(CGO_ENABLED) GOOS=linux GOARCH=$(GOARCH) GOARM=$(GOARM) go build -mod=mod -ldflags "-extldflags "-static" -X 'github.com/leoparente/opentelemetry-infinity/buildinfo.version=$(VERSION)'" -o ${BUILD_DIR}/otel-infinity cmd/main.go
-endef
+REF_TAG ?= latest
 
 getotelcol:
 	wget -O /tmp/otelcol-contrib.tar.gz https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v0.75.0/otelcol-contrib_0.75.0_linux_amd64.tar.gz
@@ -16,8 +12,8 @@ getotelcol:
 	mv /tmp/otelcol-contrib runner/otelcol-contrib
 	rm -rf /tmp/otelcol-contrib*
 
-binary:
-	$(call compile_service)
+build:
+	CGO_ENABLED=$(CGO_ENABLED) GOOS=linux GOARCH=$(GOARCH) GOARM=$(GOARM) go build -o ${BUILD_DIR}/otel-infinity cmd/main.go
   
 container:
 	docker build --no-cache \

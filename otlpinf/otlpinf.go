@@ -35,7 +35,6 @@ func New(logger *zap.Logger, c *config.Config) (OltpInf, error) {
 
 func (o *OltpInf) Start(ctx context.Context, cancelFunc context.CancelFunc) error {
 	o.stat.StartTime = time.Now()
-	o.stat.InfVersion = o.conf.Version
 	o.ctx = context.WithValue(ctx, "routine", "otlpInfRoutine")
 	o.cancelFunction = cancelFunc
 
@@ -57,7 +56,7 @@ func (o *OltpInf) Start(ctx context.Context, cancelFunc context.CancelFunc) erro
 	if err != nil {
 		return err
 	}
-	o.stat.ContribVersion = s.Buildinfo.Version
+	o.stat.Version = s.Buildinfo.Version
 	if err = o.startServer(); err != nil {
 		return err
 	}

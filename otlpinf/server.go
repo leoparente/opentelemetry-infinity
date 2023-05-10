@@ -41,8 +41,8 @@ func (o *OltpInf) startServer() error {
 	o.router.GET("/api/v1/policies/:policy", o.getPolicy)
 	o.router.DELETE("/api/v1/policies/:policy", o.deletePolicy)
 
-	serverHost := o.conf.OtlpInf.ServerHost
-	serverPort := strconv.FormatUint(o.conf.OtlpInf.ServerPort, 10)
+	serverHost := o.conf.ServerHost
+	serverPort := strconv.FormatUint(o.conf.ServerPort, 10)
 	go func() {
 		serv := serverHost + ":" + serverPort
 		o.logger.Info("starting otlp_inf server at: " + serv)
@@ -126,7 +126,7 @@ func (o *OltpInf) createPolicy(c *gin.Context) {
 		}
 	}
 
-	r := runner.New(o.logger, policy, o.policiesDir, o.conf.OtlpInf.SelfTelemetry)
+	r := runner.New(o.logger, policy, o.policiesDir, o.conf.SelfTelemetry)
 	if err := r.Configure(&data); err != nil {
 		c.IndentedJSON(http.StatusBadRequest, ReturnValue{err.Error()})
 		return

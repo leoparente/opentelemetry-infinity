@@ -8,8 +8,6 @@ import (
 	"strings"
 	"syscall"
 
-	_ "embed"
-
 	"github.com/leoparente/opentelemetry-infinity/config"
 	"github.com/leoparente/opentelemetry-infinity/otlpinf"
 	"github.com/spf13/cobra"
@@ -17,9 +15,6 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
-
-//go:embed VERSION
-var version string
 
 var (
 	Debug         bool
@@ -40,8 +35,6 @@ func Run(cmd *cobra.Command, args []string) {
 		cobra.CheckErr(fmt.Errorf("opentelemetry-infinity start up error (config): %w", err))
 		os.Exit(1)
 	}
-
-	config.Version = version
 
 	// logger
 	var logger *zap.Logger

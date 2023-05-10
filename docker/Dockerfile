@@ -7,7 +7,8 @@ COPY . .
 RUN apt update -y \
     && apt install make build-essential dpkg-dev curl ca-certificates libasan6 wget gzip -y
 RUN make getotelcol \
-    && CGO_ENABLED=1 make binary \
+    && rm -rf build \
+    && CGO_ENABLED=1 make build \
     && mv build/otel-infinity /exe
 
 FROM debian:bullseye-slim
