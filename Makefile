@@ -1,4 +1,4 @@
-VERSION = $(shell runner/otelcol-contrib -v | cut -d ' ' -f 3)
+VERSION ?= $(shell runner/otelcol-contrib -v | cut -d ' ' -f 3)
 BUILD_DIR = build
 CGO_ENABLED ?= 0
 DOCKERHUB_REPO = ghcr.io/leoparente
