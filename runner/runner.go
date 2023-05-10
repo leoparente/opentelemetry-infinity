@@ -13,7 +13,7 @@ import (
 	"time"
 
 	"github.com/amenzhinsky/go-memexec"
-	"github.com/leoparente/otlpinf/config"
+	"github.com/leoparente/opentelemetry-infinity/config"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v3"
 )
