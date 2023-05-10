@@ -29,10 +29,17 @@ jobs:
 
       - name: Build binnary (go build only)
         run: make build
+
+      - shell: bash
+        run: |
+          version=$(runner/otelcol-contrib -v | cut -d ' ' -f 3)
+          echo $version > VERSION.txt
+
+      - name: Store VERSION
       - uses: actions/upload-artifact@v3
         with:
-          name: otel-infinity
-          path: build/otel-infinity
+          name: VERSION
+          path: VERSION.txt
           
   package:
     if: ${{ github.event_name != 'pull_request' }} 
@@ -48,8 +55,12 @@ jobs:
           echo "REF_TAG=latest" >> $GITHUB_ENV
 
       - name: Get VERSION
+        uses: actions/download-artifact@v3
+        with:
+          name: VERSION
+      - shell: bash
         run: |
-          echo "VERSION=`${{github.workspace}}/runner/otelcol-contrib -v | cut -d ' ' -f 3`" >> $GITHUB_ENV
+          echo "VERSION=`cat VERSION.txt`" >> $GITHUB_ENV
 
       - name: Debug version
         run: echo ${{ env.VERSION }}
