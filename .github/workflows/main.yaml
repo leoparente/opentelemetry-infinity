@@ -28,7 +28,7 @@ jobs:
         run: make getotelcol
 
       - name: Build binnary (go build only)
-        run: make binary
+        run: make build
           
   package:
     if: ${{ github.event_name != 'pull_request' }} 
