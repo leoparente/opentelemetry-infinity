@@ -41,6 +41,7 @@ jobs:
         with:
           name: VERSION
           path: VERSION.txt
+          retention-days: 1
           
   package:
     if: ${{ github.event_name != 'pull_request' }} 
