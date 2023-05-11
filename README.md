@@ -191,10 +191,9 @@ docker run --net=host ghcr.io/leoparente/opentelemetry-infinity run -a {host} -p
 ## Policy RFC (v1)
 
 ```yaml
-policy_name:
+my_policy:
   #Optional
-  feature_gates:
-    - exporter.datadog.hostname.preview
+  #feature_gates:
   #Optional
   set:
     processors.batch.timeout: 2s
