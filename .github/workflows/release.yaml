@@ -10,7 +10,6 @@ jobs:
       release: ${{ steps.early.outputs.release }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
       - id: early
         name: New version check
         run: |
@@ -20,11 +19,8 @@ jobs:
           INF_LATEST_VERSION=$(echo $INF_LATEST_RELEASE | sed -e 's/.*"tag_name":"\([^"]*\)".*/\1/')
           release=''
           if [[ $OTEL_LATEST_VERSION != $INF_LATEST_VERSION ]]; then
-            echo "entrou"
             release=$OTEL_LATEST_VERSION
           fi
-          echo "n entrou hein"
-          echo $release
           echo "release=$release" >> $GITHUB_OUTPUT
           
           
@@ -35,5 +31,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Version validation
+        env:
+          RELEASE: ${{needs.check.outputs.release}}
         run: |
-          echo "releaseee $needs.check.outputs.release"
+          echo "releaseee $RELEASE"
