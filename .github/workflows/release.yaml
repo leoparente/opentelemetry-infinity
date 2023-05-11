@@ -34,7 +34,7 @@ jobs:
         env:
           RELEASE: ${{needs.check.outputs.release}}
         run: |
-          ARTIFACT_VERSION=$"{RELEASE:1}"
+          ARTIFACT_VERSION=${RELEASE:1}
           ARTIFACT="otelcol-contrib_${ARTIFACT_VERSION}_linux_amd64.tar.gz"
           ARTIFACT_URL="https://github.com/open-telemetry/opentelemetry-collector-releases/download/$RELEASE/$ARTIFACT"
           wget -O otelcol-contrib.tar.gz $ARTIFACT_URL
