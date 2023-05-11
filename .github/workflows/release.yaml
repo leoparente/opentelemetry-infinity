@@ -30,8 +30,14 @@ jobs:
     if: needs.check.outputs.release != ''
     steps:
       - uses: actions/checkout@v3
-      - name: Version validation
+      - name: Download Version
         env:
           RELEASE: ${{needs.check.outputs.release}}
         run: |
-          echo "releaseee $RELEASE"
+          ARTIFACT_VERSION=$"{RELEASE:1}"
+          ARTIFACT="otelcol-contrib_$ARTIFACT_VERSION__linux_amd64.tar.gz"
+          ARTIFACT_URL="https://github.com/open-telemetry/opentelemetry-collector-releases/download/$RELEASE/$ARTIFACT"
+          wget -O otelcol-contrib.tar.gz $ARTIFACT_URL
+          tar -xvzf otelcol-contrib.tar.gz -C .
+          mv otelcol-contrib runner/
+          make build
