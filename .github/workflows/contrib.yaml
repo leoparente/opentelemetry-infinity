@@ -16,8 +16,8 @@ jobs:
           INF_LATEST_RELEASE=$(curl -L -s -H 'Accept: application/json' https://github.com/open-telemetry/opentelemetry-collector-releases/releases/latest)
           INF_LATEST_VERSION=$(echo $INF_LATEST_RELEASE | sed -e 's/.*"tag_name":"\([^"]*\)".*/\1/')
           release=''
-          if [ OTEL_LATEST_VERSION != INF_LATEST_VERSION ]; then
-            $release=OTEL_LATEST_VERSION
+          if [[ $OTEL_LATEST_VERSION != $INF_LATEST_VERSION ]]; then
+            release=$OTEL_LATEST_VERSION
           fi
           echo "release=$release" >> $GITHUB_OUTPUT
           
