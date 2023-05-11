@@ -20,8 +20,10 @@ jobs:
           INF_LATEST_VERSION=$(echo $INF_LATEST_RELEASE | sed -e 's/.*"tag_name":"\([^"]*\)".*/\1/')
           release=''
           if [[ $OTEL_LATEST_VERSION != $INF_LATEST_VERSION ]]; then
+            echo "entrou"
             release=$OTEL_LATEST_VERSION
           fi
+          echo $release
           echo "release=$release" >> $GITHUB_OUTPUT
           
           
