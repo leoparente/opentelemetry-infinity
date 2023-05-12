@@ -13,7 +13,7 @@ getotelcol:
 	rm -rf /tmp/otelcol-contrib*
 
 build:
-	CGO_ENABLED=$(CGO_ENABLED) GOOS=linux GOARCH=$(GOARCH) GOARM=$(GOARM) go build -o ${BUILD_DIR}/otel-infinity cmd/main.go
+	CGO_ENABLED=$(CGO_ENABLED) GOOS=linux GOARCH=$(GOARCH) GOARM=$(GOARM) go build -mod=mod -ldflags "-extldflags "-static" -X 'github.com/leoparente/opentelemetry-infinity/buildinfo.version=$(VERSION)-$(COMMIT_HASH)'" -o ${BUILD_DIR}/otel-infinity cmd/main.go
   
 container:
 	docker build --no-cache \
