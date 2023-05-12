@@ -9,11 +9,11 @@ RUN apt update -y \
 RUN make getotelcol \
     && rm -rf build \
     && CGO_ENABLED=1 make build \
-    && mv build/otel-infinity /exe
+    && mv build/otlpinf /exe
 
 FROM debian:bullseye-slim
 
-RUN mkdir /opt/otel-infinity/
+RUN mkdir /opt/otlpinf/
 
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 COPY --from=builder /exe /
