@@ -100,10 +100,10 @@ func initConfig() {
 	replacer := strings.NewReplacer(".", "_")
 	v.SetEnvKeyReplacer(replacer)
 	// note: viper seems to require a default (or a BindEnv) to be overridden by environment variables
-	v.SetDefault("otlp_inf.debug", Debug)
-	v.SetDefault("otlp_inf.self_telemetry", SelfTelemetry)
-	v.SetDefault("otlp_inf.server_host", ServerHost)
-	v.SetDefault("otlp_inf.server_port", ServerPort)
+	v.SetDefault("otlpinf_debug", Debug)
+	v.SetDefault("otlpinf_self_telemetry", SelfTelemetry)
+	v.SetDefault("otlpinf_server_host", ServerHost)
+	v.SetDefault("otlpinf_server_port", ServerPort)
 	cobra.CheckErr(viper.MergeConfigMap(v.AllSettings()))
 }
 

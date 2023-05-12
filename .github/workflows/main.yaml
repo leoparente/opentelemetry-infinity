@@ -1,4 +1,4 @@
-name: otel-main
+name: otlpinf-main
 
 on:
   workflow_dispatch:
@@ -76,11 +76,11 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}        
 
-      - name: Build otel infinity service
+      - name: Build opentelemetry-infinity container
         shell: bash
         run: |
            make container
 
-      - name: Push otel infinity container
+      - name: Push opentelemetry-infinityn container
         run: |
           docker push -a ghcr.io/leoparente/opentelemetry-infinity

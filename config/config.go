@@ -15,8 +15,8 @@ type Policy struct {
 }
 
 type Config struct {
-	Debug         bool   `mapstructure:"debug"`
-	SelfTelemetry bool   `mapstructure:"self_telemetry"`
-	ServerHost    string `mapstructure:"server_host"`
-	ServerPort    uint64 `mapstructure:"server_port"`
+	Debug         bool   `mapstructure:"otlpinf_debug"`
+	SelfTelemetry bool   `mapstructure:"otlpinf_self_telemetry"`
+	ServerHost    string `mapstructure:"otlpinf_server_host"`
+	ServerPort    uint64 `mapstructure:"otlpinf_server_port"`
 }
