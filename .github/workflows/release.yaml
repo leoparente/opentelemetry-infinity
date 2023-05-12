@@ -37,11 +37,12 @@ jobs:
           ARTIFACT_VERSION=${RELEASE:1}
           ARTIFACT="otelcol-contrib_${ARTIFACT_VERSION}_linux_amd64.tar.gz"
           ARTIFACT_URL="https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/$RELEASE/$ARTIFACT"
-          wget -O otelcol-contrib.tar.gz $ARTIFACT_URL
           mkdir .temp/
-          tar -xvzf otelcol-contrib.tar.gz -C .temp/
+          wget -O .temp/otelcol-contrib.tar.gz $ARTIFACT_URL
+          
+          tar -xvzf .temp/otelcol-contrib.tar.gz -C .temp/
           mv .temp/otelcol-contrib runner/
-          rm -rf .temp
+          rm -rf .temp/
       
       - name: Set up Go
         uses: actions/setup-go@v4
@@ -50,5 +51,5 @@ jobs:
           
       - name: Build Binary
         run: |
-          ls
+          ls -la
           make build
