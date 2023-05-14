@@ -4,11 +4,12 @@ CGO_ENABLED ?= 0
 DOCKERHUB_REPO = ghcr.io/leoparente
 GOARCH ?= $(shell dpkg-architecture -q DEB_BUILD_ARCH)
 COMMIT_HASH = $(shell git rev-parse --short HEAD)
-
+INF_LATEST_RELEASE=$(shell curl -L -s -H 'Accept: application/json' https://github.com/leoparente/opentelemetry-infinity/releases/latest)
+INF_LATEST_VERSION=$(shell echo ${INF_LATEST_RELEASE} | sed -e 's/.*"tag_name":"\([^"]*\)".*/\1/')
 
 getotelcol:
-	wget -O /tmp/otelcol-contrib.tar.gz https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v0.75.0/otelcol-contrib_0.75.0_linux_amd64.tar.gz
-	tar -xvzf /tmp/otelcol-contrib.tar.gz -C /tmp/
+	wget -O /tmp/otelcol-contrib-$(GOARCH)$(GOARM).zip https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/$(INF_LATEST_VERSION)/otelcol-contrib-$(GOARCH)$(GOARM).zip
+	unzip /tmp/otelcol-contrib-$(GOARCH)$(GOARM).zip -d /tmp/
 	mv /tmp/otelcol-contrib runner/otelcol-contrib
 	rm -rf /tmp/otelcol-contrib*
 
