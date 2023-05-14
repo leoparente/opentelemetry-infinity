@@ -81,6 +81,6 @@ jobs:
         run: |
            make container
 
-      - name: Push opentelemetry-infinityn container
+      - name: Push opentelemetry-infinity container
         run: |
           docker push -a ghcr.io/leoparente/opentelemetry-infinity

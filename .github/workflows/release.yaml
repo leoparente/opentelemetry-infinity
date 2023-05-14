@@ -1,4 +1,4 @@
-name: otel-update
+name: otlp-release
 on:
   push:
     branches: [ "main" ]
@@ -34,6 +34,9 @@ jobs:
         env:
           RELEASE: ${{needs.check.outputs.release}}
         run: |
+          echo "LAST_TAG=`git tag --sort=committerdate | tail -1`" >> $GITHUB_ENV
+          echo "TAG=$RE:EASE" >> $GITHUB_ENV
+          
           ARTIFACT_VERSION=${RELEASE:1}
           ARTIFACT="otelcol-contrib_${ARTIFACT_VERSION}_linux_amd64.tar.gz"
           ARTIFACT_URL="https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/$RELEASE/$ARTIFACT"
@@ -43,7 +46,7 @@ jobs:
           tar -xvzf .temp/otelcol-contrib.tar.gz -C .temp/
           mv .temp/otelcol-contrib runner/
           rm -rf .temp/
-      
+
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
@@ -54,3 +57,25 @@ jobs:
 
       - name: Run test
         run: ./simpletest.sh
+
+      - name: Generate release changelog
+        run: |
+          echo "# What's new" > changelog.md
+          git log ${{ env.LAST_TAG }}..HEAD --pretty=format:"$ad- %s [%an]" >> changelog.md
+          sed -i -e "s/- /• /g" changelog.md
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        tag_name: ${{ env.TAG }}
+        body_path: ./changelog.md
+        with:
+          files: |
+            build/otlpinf
+            runner/otelcol-contrib
+
+      - name: Docker release
+        run: make release
+
+      - name: Push opentelemetry-infinity container
+        run: |
+          docker push -a ghcr.io/leoparente/opentelemetry-infinity
