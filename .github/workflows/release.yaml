@@ -1,4 +1,4 @@
-name: otlp-release
+name: otlpinf-release
 on:
   push:
     branches: [ "main" ]
@@ -35,7 +35,7 @@ jobs:
           RELEASE: ${{needs.check.outputs.release}}
         run: |
           echo "LAST_TAG=`git tag --sort=committerdate | tail -1`" >> $GITHUB_ENV
-          echo "TAG=$RE:EASE" >> $GITHUB_ENV
+          echo "TAG=$RELEASE" >> $GITHUB_ENV
           
           ARTIFACT_VERSION=${RELEASE:1}
           ARTIFACT="otelcol-contrib_${ARTIFACT_VERSION}_linux_amd64.tar.gz"
