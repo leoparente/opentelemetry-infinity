@@ -5,7 +5,7 @@ ARG GOARM
 WORKDIR /go/src/github.com/leoparente/opentelemetry-infinity
 COPY . .
 RUN apt update -y \
-    && apt install make build-essential dpkg-dev curl ca-certificates libasan6 wget gzip -y
+    && apt install make build-essential dpkg-dev curl ca-certificates libasan6 wget zip -y
 RUN make getotelcol \
     && rm -rf build \
     && CGO_ENABLED=1 make build \
