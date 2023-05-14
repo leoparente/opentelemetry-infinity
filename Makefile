@@ -4,7 +4,7 @@ CGO_ENABLED ?= 0
 DOCKERHUB_REPO = ghcr.io/leoparente
 GOARCH ?= $(shell dpkg-architecture -q DEB_BUILD_ARCH)
 COMMIT_HASH = $(shell git rev-parse --short HEAD)
-REF_TAG ?= latest
+
 
 getotelcol:
 	wget -O /tmp/otelcol-contrib.tar.gz https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v0.75.0/otelcol-contrib_0.75.0_linux_amd64.tar.gz
@@ -18,7 +18,13 @@ build:
   
 container:
 	docker build --no-cache \
-	  --tag=$(DOCKERHUB_REPO)/opentelemetry-infinity:$(REF_TAG) \
+	  --tag=$(DOCKERHUB_REPO)/opentelemetry-infinity:develop \
+	  --tag=$(DOCKERHUB_REPO)/opentelemetry-infinity:develop-$(COMMIT_HASH) \
+	  -f docker/Dockerfile .
+
+release:
+	docker build --no-cache \
+	  --tag=$(DOCKERHUB_REPO)/opentelemetry-infinity:latest \
 	  --tag=$(DOCKERHUB_REPO)/opentelemetry-infinity:$(VERSION) \
 	  --tag=$(DOCKERHUB_REPO)/opentelemetry-infinity:$(VERSION)-$(COMMIT_HASH) \
 	  -f docker/Dockerfile .
