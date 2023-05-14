@@ -29,6 +29,7 @@ jobs:
     needs: check
     permissions:
       packages: write
+      contents: write
     if: needs.check.outputs.release != ''
     steps:
       - uses: actions/checkout@v3
