@@ -12,6 +12,7 @@ getotelcol:
 	mv /tmp/otelcol-contrib runner/otelcol-contrib
 	rm -rf /tmp/otelcol-contrib*
 
+.PHONY: build
 build:
 	CGO_ENABLED=$(CGO_ENABLED) GOOS=linux GOARCH=$(GOARCH) GOARM=$(GOARM) go build -o ${BUILD_DIR}/otlpinf cmd/main.go
   

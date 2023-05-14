@@ -60,7 +60,6 @@ type Runner struct {
 	ctx           context.Context
 	cmd           *exec.Cmd
 	errChan       chan string
-	stopped       bool
 }
 
 func GetCapabilities() ([]byte, error) {
@@ -79,7 +78,7 @@ func GetCapabilities() ([]byte, error) {
 
 func New(logger *zap.Logger, policyName string, policyDir string, selfTelemetry bool) Runner {
 	channel := make(chan string)
-	return Runner{logger: logger, policyName: policyName, policyDir: policyDir, selfTelemetry: selfTelemetry, sets: make([]string, 0), errChan: channel, stopped: false}
+	return Runner{logger: logger, policyName: policyName, policyDir: policyDir, selfTelemetry: selfTelemetry, sets: make([]string, 0), errChan: channel}
 }
 
 func (r *Runner) Configure(c *config.Policy) error {
@@ -163,6 +162,7 @@ func (r *Runner) Start(ctx context.Context, cancelFunc context.CancelFunc) error
 	go func() {
 		if err := r.cmd.Wait(); err != nil {
 			r.errChan <- r.state.LastLog
+			close(r.errChan)
 		}
 	}()
 	reg, err := regexp.Compile("[^a-zA-Z0-9:(), ]+")
@@ -198,16 +198,9 @@ func (r *Runner) Start(ctx context.Context, cancelFunc context.CancelFunc) error
 
 func (r *Runner) Stop(ctx context.Context) error {
 	r.logger.Info("routine call to stop runner", zap.Any("routine", ctx.Value("routine")))
-	if r.stopped {
-		return nil
-	}
-	close(r.errChan)
 	defer r.cancelFunc()
 	r.setStatus(Offline)
-	pid := r.cmd.ProcessState.Pid()
-	exitCode := r.cmd.ProcessState.ExitCode()
-	r.logger.Info("runner process stopped", zap.Int("pid", pid), zap.Int("exit_code", exitCode))
-	r.stopped = true
+	r.logger.Info("runner process stopped", zap.String("policy", r.policyName))
 	return nil
 }
 

@@ -6,4 +6,5 @@
 *.test
 *.out
 .vscode/
+build/
 runner/otelcol-contrib
