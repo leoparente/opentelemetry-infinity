@@ -66,9 +66,9 @@ jobs:
 
       - name: Release
         uses: softprops/action-gh-release@v1
-        tag_name: ${{ env.TAG }}
-        body_path: ./changelog.md
         with:
+          tag_name: ${{ env.TAG }}
+          body_path: ./changelog.md
           files: |
             build/otlpinf
             runner/otelcol-contrib
