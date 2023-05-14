@@ -63,8 +63,8 @@ jobs:
       
       - name: Zip files
         run: |
-          zip otlpinf.zip build/otlpinf
-          zip otelcol-contrib-amd64.zip runner/otelcol-contrib
+          zip -j otlpinf.zip build/otlpinf
+          zip -j otelcol-contrib-amd64.zip runner/otelcol-contrib
 
       - name: Generate release changelog
         run: |
