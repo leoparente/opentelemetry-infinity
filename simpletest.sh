@@ -35,7 +35,7 @@ ret=$(curl -o /dev/null -s -w "%{http_code}\n" -X POST --location 'localhost:102
 kill $PID
 cd $CURRENT_DIR
 
-if [[ $ret != 203 ]]; then
+if [[ $ret != 201 ]]; then
   exit 1
 fi
 
