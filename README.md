@@ -1,16 +1,15 @@
+<img src="docs/images/logo.png" align="left" width="80px"/>
 
-<p align="left">
-<img src="docs/images/logo.png" alt="otlpinf circle logo" style="height: 100px; width:100px; float: left; margin-right: 20px"/>
-<h2 style="padding-top: 40px; padding-bottom:20px; font-size:35px"><strong><font color="#4b5fab">OpenTelemetry</font> <font color="#f6a81c">Infinity</font></strong></h2>
-</p>
+# OpenTelemetry Infinity
 
+<br clear="left"/>
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/leoparente/opentelemetry-infinity)](https://goreportcard.com/report/github.com/leoparente/opentelemetry-infinity)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/leoparente/opentelemetry-infinity)
 
 <p align="left">
   <strong>
-  <a href="#what-iis-it">What is it</a>&nbsp;&nbsp;&bull;&nbsp;&nbsp;
+  <a href="#what-is-it">What is it</a>&nbsp;&nbsp;&bull;&nbsp;&nbsp;
     <a href="#project-premises">Premises</a>&nbsp;&nbsp;&bull;&nbsp;&nbsp;
     <a href="#command-line-interface-cli">Command Line Interface</a>&nbsp;&nbsp;&bull;&nbsp;&nbsp;
     <a href="#rest-api">REST API</a>&nbsp;&nbsp;&bull;&nbsp;&nbsp;
