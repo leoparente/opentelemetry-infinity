@@ -1,7 +1,16 @@
+
+<p align="left">
+<img src="docs/images/logo.png" alt="otlpinf circle logo" style="height: 100px; width:100px; float: left; margin-right: 20px"/>
+<h2 style="padding-top: 40px; padding-bottom:20px; font-size:35px"><strong><font color="#4b5fab">OpenTelemetry</font> <font color="#f6a81c">Infinity</font></strong></h2>
+</p>
+
+
 [![Go Report Card](https://goreportcard.com/badge/github.com/leoparente/opentelemetry-infinity)](https://goreportcard.com/report/github.com/leoparente/opentelemetry-infinity)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/leoparente/opentelemetry-infinity)
+
 <p align="left">
   <strong>
+  <a href="#what-iis-it">What is it</a>&nbsp;&nbsp;&bull;&nbsp;&nbsp;
     <a href="#project-premises">Premises</a>&nbsp;&nbsp;&bull;&nbsp;&nbsp;
     <a href="#command-line-interface-cli">Command Line Interface</a>&nbsp;&nbsp;&bull;&nbsp;&nbsp;
     <a href="#rest-api">REST API</a>&nbsp;&nbsp;&bull;&nbsp;&nbsp;
@@ -9,8 +18,10 @@
   </strong>
 </p>
 
-# opentelemetry-infinity
-Opentelemetry Infinity provison [otel-collector-contrib](https://github.com/open-telemetry/opentelemetry-collector-contrib) instances through a simple REST API using a policy mechanism. Each policy spin up a new `otelcol-contrib` process running the configuration provided by the policy.
+---
+
+## What is it
+Opentelemetry Infinity provide [otel-collector-contrib](https://github.com/open-telemetry/opentelemetry-collector-contrib) instances through a simple REST API using a policy mechanism. Each policy spin up a new `otelcol-contrib` process running the configuration provided by the policy.
 
 ## Project premises
 **1. Single binary**: `otlpinf` embeds `otelcol-contrib` in its binary. Therefore, only one static binary is provided.
