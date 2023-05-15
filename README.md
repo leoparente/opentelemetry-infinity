@@ -9,6 +9,8 @@ Opentelemetry Infinity provison [otel-collector-contrib](https://github.com/open
 
 **3. Compatibility**: `opentelemetry-infinity` is basically a wrapper over the official `opentelemetry-collector` which has not released a version `1.0` yet, i.e., breaking changes are expected. Any changes that occurs on its CLI will be reflected in this project.
 
+**4. Versioning**: as `opentelemetry-infinity` is a wrapper over the official collector, it follows the official `opentelemetry-collector` version. `opentelemetry-infinity` pipeline does  releases automatically on every new `otelcol-contrib`. 
+
 ## Docker Image
 You can download and run using docker image:
 ```
