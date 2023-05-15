@@ -1,6 +1,15 @@
-# opentelemetry-infinity
 [![Go Report Card](https://goreportcard.com/badge/github.com/leoparente/opentelemetry-infinity)](https://goreportcard.com/report/github.com/leoparente/opentelemetry-infinity)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/leoparente/opentelemetry-infinity)
+<p align="left">
+  <strong>
+    <a href="#project-premises">Premises</a>&nbsp;&nbsp;&bull;&nbsp;&nbsp;
+    <a href="#command-line-interface-cli">Command Line Interface</a>&nbsp;&nbsp;&bull;&nbsp;&nbsp;
+    <a href="#rest-api">REST API</a>&nbsp;&nbsp;&bull;&nbsp;&nbsp;
+    <a href="#policy-rfc-v1">Policy RFC</a>
+  </strong>
+</p>
 
+# opentelemetry-infinity
 Opentelemetry Infinity provison [otel-collector-contrib](https://github.com/open-telemetry/opentelemetry-collector-contrib) instances through a simple REST API using a policy mechanism. Each policy spin up a new `otelcol-contrib` process running the configuration provided by the policy.
 
 ## Project premises
