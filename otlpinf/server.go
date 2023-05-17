@@ -26,7 +26,7 @@ type ReturnValue struct {
 	Message string `json:"message"`
 }
 
-func (o *OltpInf) startServer() error {
+func (o *OltpInf) setupRouter() {
 	gin.SetMode(gin.ReleaseMode)
 	o.router = gin.New()
 
@@ -40,7 +40,10 @@ func (o *OltpInf) startServer() error {
 	o.router.POST("/api/v1/policies", o.createPolicy)
 	o.router.GET("/api/v1/policies/:policy", o.getPolicy)
 	o.router.DELETE("/api/v1/policies/:policy", o.deletePolicy)
+}
 
+func (o *OltpInf) startServer() {
+	o.setupRouter()
 	serverHost := o.conf.ServerHost
 	serverPort := strconv.FormatUint(o.conf.ServerPort, 10)
 	go func() {
@@ -50,7 +53,6 @@ func (o *OltpInf) startServer() error {
 			o.logger.Fatal("shutting down the server", zap.Error(err))
 		}
 	}()
-	return nil
 }
 
 func (o *OltpInf) getStatus(c *gin.Context) {

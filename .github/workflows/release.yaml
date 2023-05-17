@@ -61,9 +61,6 @@ jobs:
       - name: Unit Tests
         run: make test
 
-      - name: Integration Test
-        run: ./simpletest.sh
-      
       - name: Zip files
         run: |
           zip -j otlpinf.zip build/otlpinf

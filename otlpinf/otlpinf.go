@@ -57,9 +57,9 @@ func (o *OltpInf) Start(ctx context.Context, cancelFunc context.CancelFunc) erro
 		return err
 	}
 	o.stat.Version = s.Buildinfo.Version
-	if err = o.startServer(); err != nil {
-		return err
-	}
+
+	o.startServer()
+
 	return nil
 }
 
@@ -67,12 +67,4 @@ func (o *OltpInf) Stop(ctx context.Context) {
 	o.logger.Info("routine call for stop otlpinf", zap.Any("routine", ctx.Value("routine")))
 	defer os.RemoveAll(o.policiesDir)
 	o.cancelFunction()
-}
-
-func (o *OltpInf) RestartRunner(ctx context.Context, name string, reason string) error {
-	return nil
-}
-
-func (o *OltpInf) RestartAll(ctx context.Context, reason string) error {
-	return nil
 }

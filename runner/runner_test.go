@@ -11,7 +11,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-func TestNew(t *testing.T) {
+func TestRunner_New(t *testing.T) {
 	// Arrange
 	logger := zaptest.NewLogger(t)
 	policyName := "test-policy"
@@ -43,7 +43,7 @@ func TestNew(t *testing.T) {
 	}
 }
 
-func TestConfigure(t *testing.T) {
+func TestRunner_Configure(t *testing.T) {
 	// Arrange
 	logger := zaptest.NewLogger(t)
 	policyName := "test-policy"
@@ -89,7 +89,7 @@ func TestConfigure(t *testing.T) {
 	}
 }
 
-func TestStartStop(t *testing.T) {
+func TestRunner_StartStop(t *testing.T) {
 	// Arrange
 	logger := zaptest.NewLogger(t)
 	policyName := "test-policy"
@@ -135,7 +135,7 @@ func TestStartStop(t *testing.T) {
 	}
 }
 
-func TestGetCapabilities(t *testing.T) {
+func TestRunner_GetCapabilities(t *testing.T) {
 	//Act
 	caps, err := GetCapabilities()
 	if err != nil {

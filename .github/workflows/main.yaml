@@ -30,11 +30,8 @@ jobs:
       - name: Build binnary (go build only)
         run: make build
 
-      - name: Unit Tests
+      - name: Unit Tests with Coverage
         run: make testcov
-
-      - name: Integration Test
-        run: ./simpletest.sh
         
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3

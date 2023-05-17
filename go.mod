@@ -2,7 +2,10 @@ module github.com/leoparente/opentelemetry-infinity
 
 go 1.20
 
-require go.uber.org/zap v1.24.0
+require (
+	go.uber.org/zap v1.24.0
+	gopkg.in/yaml.v2 v2.4.0
+)
 
 require (
 	github.com/benbjohnson/clock v1.1.0 // indirect
@@ -41,7 +44,6 @@ require (
 	golang.org/x/text v0.7.0 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
-	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
 
 require (
