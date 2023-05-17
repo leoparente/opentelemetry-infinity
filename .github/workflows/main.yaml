@@ -29,22 +29,17 @@ jobs:
 
       - name: Build binnary (go build only)
         run: make build
+
+      - name: Test
+        run: make test
+
+       - name: Run test
+        run: ./simpletest.sh
         
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
-
-      - name: Get VERSION
-        shell: bash
-        run: |
-          version=$(runner/otelcol-contrib -v | cut -d ' ' -f 3)
-          echo $version > VERSION.txt
-
-      - name: Store VERSION
-        uses: actions/upload-artifact@v3
         with:
-          name: VERSION
-          path: VERSION.txt
-          retention-days: 1
+          token: ${{ secrets.CODECOV_TOKEN }}
           
   package:
     if: ${{ github.event_name != 'pull_request' }} 
@@ -58,19 +53,6 @@ jobs:
       - name: Generate ref tag (latest)
         run: |
           echo "REF_TAG=latest" >> $GITHUB_ENV
-
-      - name: Download VERSION
-        uses: actions/download-artifact@v3
-        with:
-          name: VERSION
-      
-      - name: Get VERSION
-        shell: bash
-        run: |
-          echo "VERSION=`cat VERSION.txt`" >> $GITHUB_ENV
-
-      - name: Debug version
-        run: echo ${{ env.VERSION }}
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v2

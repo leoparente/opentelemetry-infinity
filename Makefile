@@ -16,7 +16,10 @@ getotelcol:
 .PHONY: build
 build:
 	CGO_ENABLED=$(CGO_ENABLED) GOOS=linux GOARCH=$(GOARCH) GOARM=$(GOARM) go build -o ${BUILD_DIR}/otlpinf cmd/main.go
-  
+
+test:
+	go test -v ./...
+
 container:
 	docker build --no-cache \
 	  --tag=$(DOCKERHUB_REPO)/opentelemetry-infinity:develop \
