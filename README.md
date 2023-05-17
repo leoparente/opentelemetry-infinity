@@ -4,6 +4,9 @@
 
 <br clear="left"/>
 
+[![Build status](https://github.com/leoparente/opentelemetry-infinity/workflows/otel-main/badge.svg)](https://github.com/leoparente/opentelemetry-infinity/actions)
+[![CodeQL](https://github.com/leoparente/opentelemetry-infinity/workflows/CodeQL/badge.svg)](https://github.com/leoparente/opentelemetry-infinity/security/code-scanning)
+[![CodeCov](https://codecov.io/gh/leoparente/opentelemetry-infinity/branch/main/graph/badge.svg)](https://app.codecov.io/gh/leoparente/opentelemetry-infinity/tree/main)
 [![Go Report Card](https://goreportcard.com/badge/github.com/leoparente/opentelemetry-infinity)](https://goreportcard.com/report/github.com/leoparente/opentelemetry-infinity)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/leoparente/opentelemetry-infinity)
 
