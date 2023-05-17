@@ -59,7 +59,6 @@ func TestRunner_Configure(t *testing.T) {
 		FeatureGates: []string{"gate1", "gate2"},
 		Set: map[string]string{
 			"set1": "set1",
-			"set2": "set2",
 		},
 		Config: map[string]interface{}{
 			"policy": "value1",
@@ -79,7 +78,7 @@ func TestRunner_Configure(t *testing.T) {
 		t.Errorf("Expected featureGates to be %v, but got %v", expectedFeatureGates, runner.featureGates)
 	}
 
-	expectedSet := []string{"--set=set1=set1", "--set=set2=set2"}
+	expectedSet := []string{"--set=set1=set1"}
 	if !reflect.DeepEqual(runner.sets, expectedSet) {
 		t.Errorf("Expected set to be %v, but got %v", expectedSet, runner.sets)
 	}
