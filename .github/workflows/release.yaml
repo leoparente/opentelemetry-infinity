@@ -58,10 +58,10 @@ jobs:
       - name: Build Binary
         run: make build
       
-      - name: Unit test
-        run: make testcov
+      - name: Unit Tests
+        run: make test
 
-      - name: Run test
+      - name: Integration Test
         run: ./simpletest.sh
       
       - name: Zip files
