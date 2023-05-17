@@ -33,7 +33,7 @@ jobs:
       - name: Test
         run: make test
 
-       - name: Run test
+      - name: Run test
         run: ./simpletest.sh
         
       - name: Upload coverage reports to Codecov
