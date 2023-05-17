@@ -59,7 +59,7 @@ jobs:
         run: make build
       
       - name: Unit test
-        run: make test
+        run: make testcov
 
       - name: Run test
         run: ./simpletest.sh

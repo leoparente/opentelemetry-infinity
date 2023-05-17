@@ -20,6 +20,9 @@ build:
 test:
 	go test -v ./...
 
+testcov:
+	go test -v ./... -race -coverprofile=coverage.txt -covermode=atomic
+
 container:
 	docker build --no-cache \
 	  --tag=$(DOCKERHUB_REPO)/opentelemetry-infinity:develop \
