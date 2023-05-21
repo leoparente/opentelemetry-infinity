@@ -165,10 +165,9 @@ func (r *Runner) Start(ctx context.Context, cancelFunc context.CancelFunc) error
 			close(r.errChan)
 		}
 	}()
-	reg, err := regexp.Compile("[^a-zA-Z0-9:(), ]+")
-	if err != nil {
-		return err
-	}
+
+	reg, _ := regexp.Compile("[^a-zA-Z0-9:(), ]+")
+
 	r.state.startTime = time.Now()
 	ctxTimeout, cancel := context.WithTimeout(r.ctx, 1*time.Second)
 	defer cancel()
