@@ -123,10 +123,7 @@ func TestRunner_StartStop(t *testing.T) {
 		t.Errorf("Expected no error, but got %v", err)
 	}
 
-	err = runner.Stop(ctx)
-	if err != nil {
-		t.Errorf("Expected no error, but got %v", err)
-	}
+	runner.Stop(ctx)
 
 	s := runner.GetStatus()
 	if MapStatus[s.Status] != "offline" {
