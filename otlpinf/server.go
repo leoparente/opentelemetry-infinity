@@ -146,10 +146,7 @@ func (o *OltpInf) deletePolicy(c *gin.Context) {
 	policy := c.Param("policy")
 	r, ok := o.policies[policy]
 	if ok {
-		if err := r.Instance.Stop(o.ctx); err != nil {
-			c.IndentedJSON(http.StatusBadRequest, ReturnValue{err.Error()})
-			return
-		}
+		r.Instance.Stop(o.ctx)
 		delete(o.policies, policy)
 		c.IndentedJSON(http.StatusOK, ReturnValue{policy + " was deleted"})
 	} else {

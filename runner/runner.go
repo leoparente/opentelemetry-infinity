@@ -196,12 +196,11 @@ func (r *Runner) Start(ctx context.Context, cancelFunc context.CancelFunc) error
 	return nil
 }
 
-func (r *Runner) Stop(ctx context.Context) error {
+func (r *Runner) Stop(ctx context.Context) {
 	r.logger.Info("routine call to stop runner", zap.Any("routine", ctx.Value("routine")))
 	defer r.cancelFunc()
 	r.setStatus(Offline)
 	r.logger.Info("runner process stopped", zap.String("policy", r.policyName))
-	return nil
 }
 
 func (r *Runner) FullReset(ctx context.Context) error {
