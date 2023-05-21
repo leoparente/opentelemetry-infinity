@@ -4,7 +4,7 @@ ARG GOARM
 
 WORKDIR /go/src/github.com/leoparente/opentelemetry-infinity
 COPY . .
-RUN apk update && apk add make build-base dpkg-dev
+RUN apk update && apk add make build-base dpkg-dev curl
 RUN if [ ! -f "runner/otelcol-contrib" ] ; then make getotelcol ; fi
 RUN make build && mv build/otlpinf /exe
 
