@@ -1,6 +1,7 @@
 VERSION ?= $(shell runner/otelcol-contrib -v | cut -d ' ' -f 3)
 BUILD_DIR = build
 CGO_ENABLED ?= 0
+GOARCH ?= $(shell go env GOARCH)
 DOCKERHUB_REPO = ghcr.io/leoparente
 COMMIT_HASH = $(shell git rev-parse --short HEAD)
 INF_LATEST_RELEASE := $(shell curl -L -s -H 'Accept: application/json' https://github.com/leoparente/opentelemetry-infinity/releases/latest)
