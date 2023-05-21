@@ -77,8 +77,8 @@ func GetCapabilities() ([]byte, error) {
 }
 
 func New(logger *zap.Logger, policyName string, policyDir string, selfTelemetry bool) Runner {
-	channel := make(chan string)
-	return Runner{logger: logger, policyName: policyName, policyDir: policyDir, selfTelemetry: selfTelemetry, sets: make([]string, 0), errChan: channel}
+	return Runner{logger: logger, policyName: policyName, policyDir: policyDir,
+		selfTelemetry: selfTelemetry, sets: make([]string, 0), errChan: make(chan string)}
 }
 
 func (r *Runner) Configure(c *config.Policy) error {
