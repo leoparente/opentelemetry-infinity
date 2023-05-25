@@ -63,7 +63,7 @@ jobs:
 
       - name: Zip files
         run: |
-          zip -j otlpinf.zip build/otlpinf
+          zip -j otlpinf-amd64.zip build/otlpinf
           zip -j otelcol-contrib-amd64.zip runner/otelcol-contrib
 
       - name: Generate release changelog
@@ -78,7 +78,7 @@ jobs:
           tag_name: ${{ env.TAG }}
           body_path: ./changelog.md
           files: |
-            otlpinf.zip
+            otlpinf-amd64.zip
             otelcol-contrib-amd64.zip
       
       - name: Login to GitHub Container Registry
