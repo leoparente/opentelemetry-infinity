@@ -11,12 +11,15 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-const ERROR_MSG = "Expected no error, but got %v"
+const (
+	ERROR_MSG   = "Expected no error, but got %v"
+	TEST_POLICY = "test-policy"
+)
 
 func TestRunnerNew(t *testing.T) {
 	// Arrange
 	logger := zaptest.NewLogger(t)
-	policyName := "test-policy"
+	policyName := TEST_POLICY
 	policyDir := "/tmp"
 	selfTelemetry := false
 
@@ -48,7 +51,7 @@ func TestRunnerNew(t *testing.T) {
 func TestRunnerConfigure(t *testing.T) {
 	// Arrange
 	logger := zaptest.NewLogger(t)
-	policyName := "test-policy"
+	policyName := TEST_POLICY
 	policyDir := "/tmp"
 	enableTelemetry := true
 	runner := &Runner{
@@ -93,7 +96,7 @@ func TestRunnerConfigure(t *testing.T) {
 func TestRunnerStartStop(t *testing.T) {
 	// Arrange
 	logger := zaptest.NewLogger(t)
-	policyName := "test-policy"
+	policyName := TEST_POLICY
 	policyDir := "/tmp"
 	enableTelemetry := true
 	runner := &Runner{

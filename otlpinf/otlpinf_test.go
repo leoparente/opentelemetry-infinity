@@ -18,6 +18,8 @@ const (
 	TEST_HOST    = "localhost"
 	POLICIES_API = "/api/v1/policies"
 	ERROR_MSG    = "HTTP status code = %v, wanted %v"
+	POST_ERR_MSG = "http.Post() error = %v"
+	YAML_ERR_MSG = "yaml.NewEncoder() error = %v"
 )
 
 func TestOtlpInfRestApis(t *testing.T) {
@@ -167,12 +169,12 @@ func TestOtlpinfCreateDeletePolicy(t *testing.T) {
 	var buf bytes.Buffer
 	err = yaml.NewEncoder(&buf).Encode(data)
 	if err != nil {
-		t.Errorf("yaml.NewEncoder() error = %v", err)
+		t.Errorf(YAML_ERR_MSG, err)
 	}
 
 	resp, err := http.Post(SERVER+POLICIES_API, "application/x-yaml", &buf)
 	if err != nil {
-		t.Errorf("http.Post() error = %v", err)
+		t.Errorf(POST_ERR_MSG, err)
 	}
 
 	// Assert
@@ -205,11 +207,11 @@ func TestOtlpinfCreateDeletePolicy(t *testing.T) {
 	// Act Try to insert same policy
 	err = yaml.NewEncoder(&buf).Encode(data)
 	if err != nil {
-		t.Errorf("yaml.NewEncoder() error = %v", err)
+		t.Errorf(YAML_ERR_MSG, err)
 	}
 	resp, err = http.Post(SERVER+POLICIES_API, "application/x-yaml", &buf)
 	if err != nil {
-		t.Errorf("http.Post() error = %v", err)
+		t.Errorf(POST_ERR_MSG, err)
 	}
 
 	// Assert
@@ -239,12 +241,12 @@ func TestOtlpinfCreateDeletePolicy(t *testing.T) {
 	}
 	err = yaml.NewEncoder(&buf).Encode(data)
 	if err != nil {
-		t.Errorf("yaml.NewEncoder() error = %v", err)
+		t.Errorf(YAML_ERR_MSG, err)
 	}
 
 	resp, err = http.Post(SERVER+POLICIES_API, "application/x-yaml", &buf)
 	if err != nil {
-		t.Errorf("http.Post() error = %v", err)
+		t.Errorf(POST_ERR_MSG, err)
 	}
 
 	// Assert
@@ -260,12 +262,12 @@ func TestOtlpinfCreateDeletePolicy(t *testing.T) {
 	}
 	err = yaml.NewEncoder(&buf).Encode(data)
 	if err != nil {
-		t.Errorf("yaml.NewEncoder() error = %v", err)
+		t.Errorf(YAML_ERR_MSG, err)
 	}
 
 	resp, err = http.Post(SERVER+POLICIES_API, "application/x-yaml", &buf)
 	if err != nil {
-		t.Errorf("http.Post() error = %v", err)
+		t.Errorf(POST_ERR_MSG, err)
 	}
 
 	// Assert
@@ -286,12 +288,12 @@ func TestOtlpinfCreateDeletePolicy(t *testing.T) {
 	}
 	err = yaml.NewEncoder(&buf).Encode(data)
 	if err != nil {
-		t.Errorf("yaml.NewEncoder() error = %v", err)
+		t.Errorf(YAML_ERR_MSG, err)
 	}
 
 	resp, err = http.Post(SERVER+POLICIES_API, "application/x-yaml", &buf)
 	if err != nil {
-		t.Errorf("http.Post() error = %v", err)
+		t.Errorf(POST_ERR_MSG, err)
 	}
 
 	// Assert
