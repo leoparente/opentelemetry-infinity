@@ -15,10 +15,11 @@ import (
 )
 
 const (
-	TEST_HOST = "localhost"
+	TEST_HOST    = "localhost"
+	POLICIES_API = "/api/v1/policies"
 )
 
-func TestOtlpInf_RestApis(t *testing.T) {
+func TestOtlpInfRestApis(t *testing.T) {
 	// Arrange
 	logger := zaptest.NewLogger(t)
 	cfg := config.Config{
@@ -56,7 +57,7 @@ func TestOtlpInf_RestApis(t *testing.T) {
 
 	// Act
 	w = httptest.NewRecorder()
-	req, _ = http.NewRequest("GET", "/api/v1/policies", nil)
+	req, _ = http.NewRequest("GET", POLICIES_API, nil)
 	otlp.router.ServeHTTP(w, req)
 
 	// Assert
@@ -86,7 +87,7 @@ func TestOtlpInf_RestApis(t *testing.T) {
 
 	// Act invalid header
 	w = httptest.NewRecorder()
-	req, _ = http.NewRequest("POST", "/api/v1/policies", nil)
+	req, _ = http.NewRequest("POST", POLICIES_API, nil)
 	otlp.router.ServeHTTP(w, req)
 
 	// Assert
@@ -96,7 +97,7 @@ func TestOtlpInf_RestApis(t *testing.T) {
 
 	// Act invalid policy config
 	w = httptest.NewRecorder()
-	req, _ = http.NewRequest("POST", "/api/v1/policies", bytes.NewBuffer([]byte("invalid\n")))
+	req, _ = http.NewRequest("POST", POLICIES_API, bytes.NewBuffer([]byte("invalid\n")))
 	req.Header.Set("Content-Type", "application/x-yaml")
 	otlp.router.ServeHTTP(w, req)
 
@@ -106,7 +107,7 @@ func TestOtlpInf_RestApis(t *testing.T) {
 	}
 }
 
-func TestOtlpinf_CreateDeletePolicy(t *testing.T) {
+func TestOtlpinfCreateDeletePolicy(t *testing.T) {
 	// Arrange
 	logger := zaptest.NewLogger(t)
 	cfg := config.Config{
@@ -168,7 +169,7 @@ func TestOtlpinf_CreateDeletePolicy(t *testing.T) {
 		t.Errorf("yaml.NewEncoder() error = %v", err)
 	}
 
-	resp, err := http.Post(SERVER+"/api/v1/policies", "application/x-yaml", &buf)
+	resp, err := http.Post(SERVER+POLICIES_API, "application/x-yaml", &buf)
 	if err != nil {
 		t.Errorf("http.Post() error = %v", err)
 	}
@@ -179,7 +180,7 @@ func TestOtlpinf_CreateDeletePolicy(t *testing.T) {
 	}
 
 	// Act Get Policies
-	resp, err = http.Get(SERVER + "/api/v1/policies")
+	resp, err = http.Get(SERVER + POLICIES_API)
 	if err != nil {
 		t.Errorf("http.Get() error = %v", err)
 	}
@@ -205,7 +206,7 @@ func TestOtlpinf_CreateDeletePolicy(t *testing.T) {
 	if err != nil {
 		t.Errorf("yaml.NewEncoder() error = %v", err)
 	}
-	resp, err = http.Post(SERVER+"/api/v1/policies", "application/x-yaml", &buf)
+	resp, err = http.Post(SERVER+POLICIES_API, "application/x-yaml", &buf)
 	if err != nil {
 		t.Errorf("http.Post() error = %v", err)
 	}
@@ -240,7 +241,7 @@ func TestOtlpinf_CreateDeletePolicy(t *testing.T) {
 		t.Errorf("yaml.NewEncoder() error = %v", err)
 	}
 
-	resp, err = http.Post(SERVER+"/api/v1/policies", "application/x-yaml", &buf)
+	resp, err = http.Post(SERVER+POLICIES_API, "application/x-yaml", &buf)
 	if err != nil {
 		t.Errorf("http.Post() error = %v", err)
 	}
@@ -261,7 +262,7 @@ func TestOtlpinf_CreateDeletePolicy(t *testing.T) {
 		t.Errorf("yaml.NewEncoder() error = %v", err)
 	}
 
-	resp, err = http.Post(SERVER+"/api/v1/policies", "application/x-yaml", &buf)
+	resp, err = http.Post(SERVER+POLICIES_API, "application/x-yaml", &buf)
 	if err != nil {
 		t.Errorf("http.Post() error = %v", err)
 	}
@@ -287,7 +288,7 @@ func TestOtlpinf_CreateDeletePolicy(t *testing.T) {
 		t.Errorf("yaml.NewEncoder() error = %v", err)
 	}
 
-	resp, err = http.Post(SERVER+"/api/v1/policies", "application/x-yaml", &buf)
+	resp, err = http.Post(SERVER+POLICIES_API, "application/x-yaml", &buf)
 	if err != nil {
 		t.Errorf("http.Post() error = %v", err)
 	}
