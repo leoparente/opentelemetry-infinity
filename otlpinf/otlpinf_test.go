@@ -17,6 +17,7 @@ import (
 const (
 	TEST_HOST    = "localhost"
 	POLICIES_API = "/api/v1/policies"
+	ERROR_MSG    = "HTTP status code = %v, wanted %v"
 )
 
 func TestOtlpInfRestApis(t *testing.T) {
@@ -42,7 +43,7 @@ func TestOtlpInfRestApis(t *testing.T) {
 
 	// Assert
 	if w.Code != http.StatusOK {
-		t.Errorf("HTTP status code = %v, wanted %v", w.Code, http.StatusOK)
+		t.Errorf(ERROR_MSG, w.Code, http.StatusOK)
 	}
 
 	// Act
@@ -52,7 +53,7 @@ func TestOtlpInfRestApis(t *testing.T) {
 
 	// Assert
 	if w.Code != http.StatusOK {
-		t.Errorf("HTTP status code = %v, wanted %v", w.Code, http.StatusOK)
+		t.Errorf(ERROR_MSG, w.Code, http.StatusOK)
 	}
 
 	// Act
@@ -62,7 +63,7 @@ func TestOtlpInfRestApis(t *testing.T) {
 
 	// Assert
 	if w.Code != http.StatusOK {
-		t.Errorf("HTTP status code = %v, wanted %v", w.Code, http.StatusOK)
+		t.Errorf(ERROR_MSG, w.Code, http.StatusOK)
 	}
 
 	// Act get invalid policy
@@ -72,7 +73,7 @@ func TestOtlpInfRestApis(t *testing.T) {
 
 	// Assert
 	if w.Code != http.StatusNotFound {
-		t.Errorf("HTTP status code = %v, wanted %v", w.Code, http.StatusNotFound)
+		t.Errorf(ERROR_MSG, w.Code, http.StatusNotFound)
 	}
 
 	// Act delete invalid policy
@@ -82,7 +83,7 @@ func TestOtlpInfRestApis(t *testing.T) {
 
 	// Assert
 	if w.Code != http.StatusNotFound {
-		t.Errorf("HTTP status code = %v, wanted %v", w.Code, http.StatusNotFound)
+		t.Errorf(ERROR_MSG, w.Code, http.StatusNotFound)
 	}
 
 	// Act invalid header
@@ -92,7 +93,7 @@ func TestOtlpInfRestApis(t *testing.T) {
 
 	// Assert
 	if w.Code != http.StatusBadRequest {
-		t.Errorf("HTTP status code = %v, wanted %v", w.Code, http.StatusBadRequest)
+		t.Errorf(ERROR_MSG, w.Code, http.StatusBadRequest)
 	}
 
 	// Act invalid policy config
@@ -103,7 +104,7 @@ func TestOtlpInfRestApis(t *testing.T) {
 
 	// Assert
 	if w.Code != http.StatusBadRequest {
-		t.Errorf("HTTP status code = %v, wanted %v", w.Code, http.StatusBadRequest)
+		t.Errorf(ERROR_MSG, w.Code, http.StatusBadRequest)
 	}
 }
 
@@ -176,7 +177,7 @@ func TestOtlpinfCreateDeletePolicy(t *testing.T) {
 
 	// Assert
 	if resp.StatusCode != http.StatusCreated {
-		t.Errorf("HTTP status code = %v, wanted %v", resp.StatusCode, http.StatusCreated)
+		t.Errorf(ERROR_MSG, resp.StatusCode, http.StatusCreated)
 	}
 
 	// Act Get Policies
@@ -187,7 +188,7 @@ func TestOtlpinfCreateDeletePolicy(t *testing.T) {
 
 	// Assert
 	if resp.StatusCode != http.StatusOK {
-		t.Errorf("HTTP status code = %v, wanted %v", resp.StatusCode, http.StatusOK)
+		t.Errorf(ERROR_MSG, resp.StatusCode, http.StatusOK)
 	}
 
 	// Act Get Valid Policy
@@ -198,7 +199,7 @@ func TestOtlpinfCreateDeletePolicy(t *testing.T) {
 
 	// Assert
 	if resp.StatusCode != http.StatusOK {
-		t.Errorf("HTTP status code = %v, wanted %v", resp.StatusCode, http.StatusOK)
+		t.Errorf(ERROR_MSG, resp.StatusCode, http.StatusOK)
 	}
 
 	// Act Try to insert same policy
@@ -213,7 +214,7 @@ func TestOtlpinfCreateDeletePolicy(t *testing.T) {
 
 	// Assert
 	if resp.StatusCode != http.StatusConflict {
-		t.Errorf("HTTP status code = %v, wanted %v", resp.StatusCode, http.StatusConflict)
+		t.Errorf(ERROR_MSG, resp.StatusCode, http.StatusConflict)
 	}
 
 	//Act Delete Policy
@@ -229,7 +230,7 @@ func TestOtlpinfCreateDeletePolicy(t *testing.T) {
 
 	// Assert
 	if resp.StatusCode != http.StatusOK {
-		t.Errorf("HTTP status code = %v, wanted %v", resp.StatusCode, http.StatusOK)
+		t.Errorf(ERROR_MSG, resp.StatusCode, http.StatusOK)
 	}
 
 	//Act try to insert policy without config
@@ -248,7 +249,7 @@ func TestOtlpinfCreateDeletePolicy(t *testing.T) {
 
 	// Assert
 	if resp.StatusCode != http.StatusForbidden {
-		t.Errorf("HTTP status code = %v, wanted %v", resp.StatusCode, http.StatusForbidden)
+		t.Errorf(ERROR_MSG, resp.StatusCode, http.StatusForbidden)
 	}
 
 	//Act try to insert policy with invalid config
@@ -269,7 +270,7 @@ func TestOtlpinfCreateDeletePolicy(t *testing.T) {
 
 	// Assert
 	if resp.StatusCode != http.StatusBadRequest {
-		t.Errorf("HTTP status code = %v, wanted %v", resp.StatusCode, http.StatusBadRequest)
+		t.Errorf(ERROR_MSG, resp.StatusCode, http.StatusBadRequest)
 	}
 
 	//Act try to insert two policies at once
@@ -295,7 +296,7 @@ func TestOtlpinfCreateDeletePolicy(t *testing.T) {
 
 	// Assert
 	if resp.StatusCode != http.StatusBadRequest {
-		t.Errorf("HTTP status code = %v, wanted %v", resp.StatusCode, http.StatusBadRequest)
+		t.Errorf(ERROR_MSG, resp.StatusCode, http.StatusBadRequest)
 	}
 
 	otlp.Stop(ctx)

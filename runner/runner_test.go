@@ -11,6 +11,8 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+const ERROR_MSG = "Expected no error, but got %v"
+
 func TestRunnerNew(t *testing.T) {
 	// Arrange
 	logger := zaptest.NewLogger(t)
@@ -70,7 +72,7 @@ func TestRunnerConfigure(t *testing.T) {
 
 	// Assert
 	if err != nil {
-		t.Errorf("Expected no error, but got %v", err)
+		t.Errorf(ERROR_MSG, err)
 	}
 
 	expectedFeatureGates := "gate1,gate2"
@@ -114,13 +116,13 @@ func TestRunnerStartStop(t *testing.T) {
 	//Act
 	err := runner.Configure(config)
 	if err != nil {
-		t.Errorf("Expected no error, but got %v", err)
+		t.Errorf(ERROR_MSG, err)
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
 	err = runner.Start(ctx, cancel)
 	if err != nil {
-		t.Errorf("Expected no error, but got %v", err)
+		t.Errorf(ERROR_MSG, err)
 	}
 
 	runner.Stop(ctx)
@@ -135,7 +137,7 @@ func TestRunnerGetCapabilities(t *testing.T) {
 	//Act
 	caps, err := GetCapabilities()
 	if err != nil {
-		t.Errorf("Expected no error, but got %v", err)
+		t.Errorf(ERROR_MSG, err)
 	}
 
 	// Assert
@@ -146,6 +148,6 @@ func TestRunnerGetCapabilities(t *testing.T) {
 	}{}
 	err = yaml.Unmarshal(caps, &s)
 	if err != nil {
-		t.Errorf("Expected no error, but got %v", err)
+		t.Errorf(ERROR_MSG, err)
 	}
 }
