@@ -16,6 +16,12 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      with:
+        args: >
+          -Dsonar.organization=leoparente
+          -Dsonar.projectKey=leoparente_opentelemetry-infinity
+          -Dsonar.verbose=true
+        
   snyk:
     name: SCA Scan
     runs-on: ubuntu-latest
