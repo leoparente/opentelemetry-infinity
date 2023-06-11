@@ -236,16 +236,50 @@ func TestOtlpinfCreateDeletePolicy(t *testing.T) {
 		t.Errorf(ERROR_MSG, resp.StatusCode, http.StatusOK)
 	}
 
-	//Act try to insert policy without config
-	data[policyName] = map[string]interface{}{
-		"feature_gates": []string{"all"},
+	otlp.Stop(ctx)
+}
+
+func TestOtlpinfCreateInvalidPolicy(t *testing.T) {
+	// Arrange
+	logger := zaptest.NewLogger(t)
+	cfg := config.Config{
+		Debug:      true,
+		ServerHost: TEST_HOST,
+		ServerPort: 55682,
 	}
+
+	SERVER := fmt.Sprintf("http://%s:%v", cfg.ServerHost, cfg.ServerPort)
+
+	// Act and Assert
+	otlp, err := New(logger, &cfg)
+	if err != nil {
+		t.Errorf("New() error = %v", err)
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	err = otlp.Start(ctx, cancel)
+
+	if err != nil {
+		t.Errorf("Start() error = %v", err)
+	}
+
+	time.Sleep(100 * time.Millisecond)
+
+	policyName := "policy_test"
+
+	//Act try to insert policy without config
+	data := map[string]interface{}{
+		policyName: map[string]interface{}{
+			"feature_gates": []string{"all"},
+		},
+	}
+	var buf bytes.Buffer
 	err = yaml.NewEncoder(&buf).Encode(data)
 	if err != nil {
 		t.Errorf(YAML_ERR_MSG, err)
 	}
 
-	resp, err = http.Post(SERVER+POLICIES_API, HTTP_YAML_CONTENT, &buf)
+	resp, err := http.Post(SERVER+POLICIES_API, HTTP_YAML_CONTENT, &buf)
 	if err != nil {
 		t.Errorf(POST_ERR_MSG, err)
 	}
