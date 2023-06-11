@@ -19,6 +19,7 @@ const (
 	POLICIES_API      = "/api/v1/policies"
 	HTTP_YAML_CONTENT = "application/x-yaml"
 	ERROR_MSG         = "HTTP status code = %v, wanted %v"
+	NEW_ERR_MSG       = "New() error = %v"
 	POST_ERR_MSG      = "http.Post() error = %v"
 	YAML_ERR_MSG      = "yaml.NewEncoder() error = %v"
 )
@@ -34,7 +35,7 @@ func TestOtlpInfRestApis(t *testing.T) {
 
 	otlp, err := New(logger, &cfg)
 	if err != nil {
-		t.Errorf("New() error = %v", err)
+		t.Errorf(NEW_ERR_MSG, err)
 	}
 
 	otlp.setupRouter()
@@ -125,7 +126,7 @@ func TestOtlpinfCreateDeletePolicy(t *testing.T) {
 	// Act and Assert
 	otlp, err := New(logger, &cfg)
 	if err != nil {
-		t.Errorf("New() error = %v", err)
+		t.Errorf(NEW_ERR_MSG, err)
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -253,7 +254,7 @@ func TestOtlpinfCreateInvalidPolicy(t *testing.T) {
 	// Act and Assert
 	otlp, err := New(logger, &cfg)
 	if err != nil {
-		t.Errorf("New() error = %v", err)
+		t.Errorf(NEW_ERR_MSG, err)
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())

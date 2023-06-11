@@ -54,6 +54,7 @@ type Runner struct {
 	policyFile    string
 	featureGates  string
 	sets          []string
+	options       []string
 	selfTelemetry bool
 	state         State
 	cancelFunc    context.CancelFunc
@@ -108,6 +109,23 @@ func (r *Runner) Configure(c *config.Policy) error {
 		}
 	}
 
+	r.options = []string{
+		"--config",
+		r.policyFile,
+	}
+
+	if !r.selfTelemetry {
+		r.options = append(r.options, "--set=service.telemetry.metrics.level=None")
+	}
+
+	if len(r.featureGates) > 0 {
+		r.options = append(r.options, "--feature-gates", r.featureGates)
+	}
+
+	if len(r.sets) > 0 {
+		r.options = append(r.options, r.sets...)
+	}
+
 	return nil
 }
 
@@ -115,30 +133,13 @@ func (r *Runner) Start(ctx context.Context, cancelFunc context.CancelFunc) error
 	r.cancelFunc = cancelFunc
 	r.ctx = ctx
 
-	sOptions := []string{
-		"--config",
-		r.policyFile,
-	}
-
-	if !r.selfTelemetry {
-		sOptions = append(sOptions, "--set=service.telemetry.metrics.level=None")
-	}
-
-	if len(r.featureGates) > 0 {
-		sOptions = append(sOptions, "--feature-gates", r.featureGates)
-	}
-
-	if len(r.sets) > 0 {
-		sOptions = append(sOptions, r.sets...)
-	}
-
 	exe, err := memexec.New(otel_contrib)
 	if err != nil {
 		return err
 	}
 	defer exe.Close()
 
-	r.cmd = exe.CommandContext(ctx, sOptions...)
+	r.cmd = exe.CommandContext(ctx, r.options...)
 	if r.cmd.Err != nil {
 		return r.cmd.Err
 	}
