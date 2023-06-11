@@ -15,11 +15,12 @@ import (
 )
 
 const (
-	TEST_HOST    = "localhost"
-	POLICIES_API = "/api/v1/policies"
-	ERROR_MSG    = "HTTP status code = %v, wanted %v"
-	POST_ERR_MSG = "http.Post() error = %v"
-	YAML_ERR_MSG = "yaml.NewEncoder() error = %v"
+	TEST_HOST         = "localhost"
+	POLICIES_API      = "/api/v1/policies"
+	HTTP_YAML_CONTENT = "application/x-yaml"
+	ERROR_MSG         = "HTTP status code = %v, wanted %v"
+	POST_ERR_MSG      = "http.Post() error = %v"
+	YAML_ERR_MSG      = "yaml.NewEncoder() error = %v"
 )
 
 func TestOtlpInfRestApis(t *testing.T) {
@@ -101,7 +102,7 @@ func TestOtlpInfRestApis(t *testing.T) {
 	// Act invalid policy config
 	w = httptest.NewRecorder()
 	req, _ = http.NewRequest("POST", POLICIES_API, bytes.NewBuffer([]byte("invalid\n")))
-	req.Header.Set("Content-Type", "application/x-yaml")
+	req.Header.Set("Content-Type", HTTP_YAML_CONTENT)
 	otlp.router.ServeHTTP(w, req)
 
 	// Assert
@@ -172,7 +173,7 @@ func TestOtlpinfCreateDeletePolicy(t *testing.T) {
 		t.Errorf(YAML_ERR_MSG, err)
 	}
 
-	resp, err := http.Post(SERVER+POLICIES_API, "application/x-yaml", &buf)
+	resp, err := http.Post(SERVER+POLICIES_API, HTTP_YAML_CONTENT, &buf)
 	if err != nil {
 		t.Errorf(POST_ERR_MSG, err)
 	}
@@ -209,7 +210,7 @@ func TestOtlpinfCreateDeletePolicy(t *testing.T) {
 	if err != nil {
 		t.Errorf(YAML_ERR_MSG, err)
 	}
-	resp, err = http.Post(SERVER+POLICIES_API, "application/x-yaml", &buf)
+	resp, err = http.Post(SERVER+POLICIES_API, HTTP_YAML_CONTENT, &buf)
 	if err != nil {
 		t.Errorf(POST_ERR_MSG, err)
 	}
@@ -244,7 +245,7 @@ func TestOtlpinfCreateDeletePolicy(t *testing.T) {
 		t.Errorf(YAML_ERR_MSG, err)
 	}
 
-	resp, err = http.Post(SERVER+POLICIES_API, "application/x-yaml", &buf)
+	resp, err = http.Post(SERVER+POLICIES_API, HTTP_YAML_CONTENT, &buf)
 	if err != nil {
 		t.Errorf(POST_ERR_MSG, err)
 	}
@@ -265,7 +266,7 @@ func TestOtlpinfCreateDeletePolicy(t *testing.T) {
 		t.Errorf(YAML_ERR_MSG, err)
 	}
 
-	resp, err = http.Post(SERVER+POLICIES_API, "application/x-yaml", &buf)
+	resp, err = http.Post(SERVER+POLICIES_API, HTTP_YAML_CONTENT, &buf)
 	if err != nil {
 		t.Errorf(POST_ERR_MSG, err)
 	}
@@ -291,7 +292,7 @@ func TestOtlpinfCreateDeletePolicy(t *testing.T) {
 		t.Errorf(YAML_ERR_MSG, err)
 	}
 
-	resp, err = http.Post(SERVER+POLICIES_API, "application/x-yaml", &buf)
+	resp, err = http.Post(SERVER+POLICIES_API, HTTP_YAML_CONTENT, &buf)
 	if err != nil {
 		t.Errorf(POST_ERR_MSG, err)
 	}
