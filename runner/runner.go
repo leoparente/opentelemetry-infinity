@@ -203,10 +203,6 @@ func (r *Runner) Stop(ctx context.Context) {
 	r.logger.Info("runner process stopped", zap.String("policy", r.policyName))
 }
 
-func (r *Runner) FullReset(ctx context.Context) error {
-	return nil
-}
-
 func (r *Runner) GetStatus() State {
 	return r.state
 }

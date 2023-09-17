@@ -2,6 +2,8 @@ package runner
 
 import (
 	"context"
+	"fmt"
+	"os"
 	"reflect"
 	"strings"
 	"testing"
@@ -16,27 +18,27 @@ const (
 	TEST_POLICY = "test-policy"
 )
 
+var POLICY_DIR = os.TempDir()
+
 func TestRunnerNew(t *testing.T) {
 	// Arrange
 	logger := zaptest.NewLogger(t)
-	policyName := TEST_POLICY
-	policyDir := "/tmp"
 	selfTelemetry := false
 
 	// Act
-	runner := New(logger, policyName, policyDir, selfTelemetry)
+	runner := New(logger, TEST_POLICY, POLICY_DIR, selfTelemetry)
 
 	// Assert
 	if runner.logger != logger {
 		t.Errorf("Expected logger to be set to %v, got %v", logger, runner.logger)
 	}
 
-	if runner.policyName != policyName {
-		t.Errorf("Expected policyName to be set to %s, got %s", policyName, runner.policyName)
+	if runner.policyName != TEST_POLICY {
+		t.Errorf("Expected policyName to be set to %s, got %s", TEST_POLICY, runner.policyName)
 	}
 
-	if runner.policyDir != policyDir {
-		t.Errorf("Expected policyDir to be set to %s, got %s", policyDir, runner.policyDir)
+	if runner.policyDir != POLICY_DIR {
+		t.Errorf("Expected policyDir to be set to %s, got %s", POLICY_DIR, runner.policyDir)
 	}
 
 	if runner.selfTelemetry != selfTelemetry {
@@ -51,13 +53,11 @@ func TestRunnerNew(t *testing.T) {
 func TestRunnerConfigure(t *testing.T) {
 	// Arrange
 	logger := zaptest.NewLogger(t)
-	policyName := TEST_POLICY
-	policyDir := "/tmp"
-	enableTelemetry := true
+	enableTelemetry := false
 	runner := &Runner{
 		logger:        logger,
-		policyName:    policyName,
-		policyDir:     policyDir,
+		policyName:    TEST_POLICY,
+		policyDir:     POLICY_DIR,
 		selfTelemetry: enableTelemetry,
 	}
 	config := &config.Policy{
@@ -88,22 +88,67 @@ func TestRunnerConfigure(t *testing.T) {
 		t.Errorf("Expected set to be %v, but got %v", expectedSet, runner.sets)
 	}
 
-	if !strings.Contains(runner.policyFile, policyName) {
-		t.Errorf("Expected policy File to contain %v, but got %v", policyName, runner.policyFile)
+	if !strings.Contains(runner.policyFile, TEST_POLICY) {
+		t.Errorf("Expected policy File to contain %v, but got %v", TEST_POLICY, runner.policyFile)
+	}
+}
+
+func TestRunnerConfigureError(t *testing.T) {
+	logger := zaptest.NewLogger(t)
+	runner := &Runner{
+		logger:        logger,
+		policyName:    "invalid/pattern",
+		policyDir:     POLICY_DIR,
+		selfTelemetry: true,
+	}
+
+	// Error in Yaml Marshal
+	policy := &config.Policy{
+		Config: map[string]interface{}{
+			"function": func() {},
+		},
+	}
+
+	var err error
+	func() {
+		defer func() {
+			if r := recover(); r != nil {
+				err = fmt.Errorf("Recovered from panic: %v", r)
+			}
+		}()
+		err = runner.Configure(policy)
+	}()
+	if err == nil {
+		t.Errorf(ERROR_MSG, err)
+	}
+	if !strings.Contains(err.Error(), "cannot marshal type: func()") {
+		t.Errorf("Expected a 'cannot marshal type: func()' error, but got: %s", err.Error())
+	}
+
+	//Error in create temp file
+	policy = &config.Policy{
+		Config: map[string]interface{}{
+			"policy": "simple",
+		},
+	}
+
+	err = runner.Configure(policy)
+	if err == nil {
+		t.Errorf(ERROR_MSG, err)
+	}
+	if !strings.Contains(err.Error(), "invalid/pattern") {
+		t.Errorf("Expected an 'invalid/pattern' error, but got: %s", err.Error())
 	}
 }
 
 func TestRunnerStartStop(t *testing.T) {
 	// Arrange
 	logger := zaptest.NewLogger(t)
-	policyName := TEST_POLICY
-	policyDir := "/tmp"
-	enableTelemetry := true
 	runner := &Runner{
 		logger:        logger,
-		policyName:    policyName,
-		policyDir:     policyDir,
-		selfTelemetry: enableTelemetry,
+		policyName:    TEST_POLICY,
+		policyDir:     POLICY_DIR,
+		selfTelemetry: true,
 	}
 	config := &config.Policy{
 		FeatureGates: []string{"gate1", "gate2"},

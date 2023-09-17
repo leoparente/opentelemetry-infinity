@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"strings"
 	"testing"
 	"time"
 
@@ -338,4 +340,36 @@ func TestOtlpinfCreateInvalidPolicy(t *testing.T) {
 	}
 
 	otlp.Stop(ctx)
+}
+
+func TestOtlpinfStartError(t *testing.T) {
+	// Arrange
+	logger := zaptest.NewLogger(t)
+	cfg := config.Config{
+		Debug:      true,
+		ServerHost: TEST_HOST,
+		ServerPort: 55684,
+	}
+
+	// Change the temporary directory environment variable to an invalid path
+	os.Setenv("TMPDIR", "invalid/prefix")
+
+	// Act and Assert
+	otlp, err := New(logger, &cfg)
+	if err != nil {
+		t.Errorf(NEW_ERR_MSG, err)
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	err = otlp.Start(ctx, cancel)
+
+	if err == nil {
+		t.Errorf("Expected an error, but got none")
+	}
+	if !strings.Contains(err.Error(), "invalid/prefix") {
+		t.Errorf("Expected an 'invalid/prefix' error, but got: %s", err.Error())
+	}
+
+	// Reset the temporary directory environment variable to its original value
+	os.Unsetenv("TMPDIR")
 }
