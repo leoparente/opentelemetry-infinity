@@ -26,7 +26,7 @@ func TestRunnerNew(t *testing.T) {
 	selfTelemetry := false
 
 	// Act
-	runner := New(logger, TEST_POLICY, TEST_POLICY, selfTelemetry)
+	runner := New(logger, TEST_POLICY, POLICY_DIR, selfTelemetry)
 
 	// Assert
 	if runner.logger != logger {
