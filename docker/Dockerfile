@@ -8,7 +8,7 @@ RUN apk update && apk add make build-base dpkg-dev curl
 RUN if [ ! -f "runner/otelcol-contrib" ] ; then make getotelcol ; fi
 RUN make build && mv build/otlpinf /exe
 
-FROM alpine:3.18.5
+FROM alpine:3
 
 RUN mkdir /opt/otlpinf/
 
