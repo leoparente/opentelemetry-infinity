@@ -232,8 +232,7 @@ my_policy:
           grpc: 
  
     exporters:
-      logging:
-        loglevel: debug
+      debug:
       
     service:
       pipelines:
@@ -241,5 +240,5 @@ my_policy:
           receivers:
           - otlp
           exporters:
-          - logging
+          - debug
 ```
