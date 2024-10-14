@@ -151,7 +151,7 @@ func TestRunnerStartStop(t *testing.T) {
 		selfTelemetry: true,
 	}
 	config := &config.Policy{
-		FeatureGates: []string{"gate1", "gate2"},
+		FeatureGates: []string{"awsemf.nodimrollupdefault", "exporter.datadogexporter.DisableAPMStats"},
 		Set: map[string]string{
 			"set1": "set1",
 			"set2": "set2",
