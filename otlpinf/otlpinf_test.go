@@ -155,15 +155,13 @@ func TestOtlpinfCreateDeletePolicy(t *testing.T) {
 					},
 				},
 				"exporters": map[string]interface{}{
-					"logging": map[string]interface{}{
-						"loglevel": "debug",
-					},
+					"debug": map[string]interface{}{},
 				},
 				"service": map[string]interface{}{
 					"pipelines": map[string]interface{}{
 						"metrics": map[string]interface{}{
 							"receivers": []string{"otlp"},
-							"exporters": []string{"logging"},
+							"exporters": []string{"debug"},
 						},
 					},
 				},
